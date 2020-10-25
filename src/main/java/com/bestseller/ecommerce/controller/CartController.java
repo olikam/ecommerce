@@ -2,10 +2,11 @@ package com.bestseller.ecommerce.controller;
 
 import com.bestseller.ecommerce.entity.Cart;
 import com.bestseller.ecommerce.entity.Product;
-import com.bestseller.ecommerce.model.*;
+import com.bestseller.ecommerce.model.AddItemRequest;
+import com.bestseller.ecommerce.model.DeleteItemRequest;
+import com.bestseller.ecommerce.model.ProductResponse;
 import com.bestseller.ecommerce.service.CartService;
 import com.bestseller.ecommerce.service.ProductService;
-import com.bestseller.ecommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/cart")
 public class CartController extends BaseController {
-
-	@Autowired
-	private UserService userService;
 
 	@Autowired
 	private ProductService productService;

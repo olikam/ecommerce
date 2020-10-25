@@ -27,11 +27,6 @@ public class AdminController {
 	@Autowired
 	private ReportService reportService;
 
-	@GetMapping
-	public ResponseEntity<List<Product>> getProducts() {
-		return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
-	}
-
 	@GetMapping("/report")
 	public ResponseEntity<Report> getReport() {
 		return new ResponseEntity<>(reportService.generateReport(), HttpStatus.OK);

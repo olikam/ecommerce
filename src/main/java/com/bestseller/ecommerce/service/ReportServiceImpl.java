@@ -29,7 +29,7 @@ public class ReportServiceImpl implements ReportService {
 			amount.addToTotal(order.getTotalAmount());
 			amount.addToDiscounted(order.getDiscountedAmount());
 			for (OrderProduct orderProduct : order.getOrderProducts()) {
-				Arrays.stream(orderProduct.getToppingsNames().split(",")).filter(StringUtils::isNotBlank).forEach(topping -> mostUsedToppings.put(topping, mostUsedToppings.getOrDefault(topping, 1) + orderProduct.getQuantity()));
+				Arrays.stream(orderProduct.getToppingsNames().split(",")).filter(StringUtils::isNotBlank).forEach(topping -> mostUsedToppings.put(topping, mostUsedToppings.getOrDefault(topping, 0) + orderProduct.getQuantity()));
 			}
 		}
 		return new Report(sortByDesc(amountPerCustomer), sortByDesc(mostUsedToppings));

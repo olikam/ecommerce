@@ -13,18 +13,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
-public class UserServiceIntgTest {
+public class UserServiceTest {
 
 	@TestConfiguration
-	static class EmployeeServiceImplTestContextConfiguration {
+	static class UserServiceImplTestConfig {
 
 		@Bean
 		public UserService userService() {
@@ -57,4 +60,17 @@ public class UserServiceIntgTest {
 		assertThrows(UserAlreadyExistsException.class, () -> userService.register(user));
 	}
 
+	@Test
+	public void testGet() {
+		Mockito.when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+		UserDetails userDetails = (User) userService.loadUserByUsername(user.getUsername());
+		assertThat(userDetails.getUsername()).isEqualTo(user.getUsername());
+	}
+
+	@Test
+	public void testGetAll() {
+		List<User> users = List.of(this.user);
+		Mockito.when(userRepository.findAll()).thenReturn(users);
+		assertThat(userService.getAllUsers()).containsExactlyInAnyOrderElementsOf(users);
+	}
 }

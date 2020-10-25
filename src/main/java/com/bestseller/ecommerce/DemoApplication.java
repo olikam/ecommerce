@@ -1,8 +1,8 @@
 package com.bestseller.ecommerce;
 
 import com.bestseller.ecommerce.entity.Product;
-import com.bestseller.ecommerce.model.ProductType;
 import com.bestseller.ecommerce.entity.User;
+import com.bestseller.ecommerce.model.ProductType;
 import com.bestseller.ecommerce.model.UserRole;
 import com.bestseller.ecommerce.service.ProductService;
 import com.bestseller.ecommerce.service.UserService;
@@ -10,7 +10,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

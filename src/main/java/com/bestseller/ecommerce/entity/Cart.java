@@ -1,13 +1,16 @@
 package com.bestseller.ecommerce.entity;
 
 import com.bestseller.ecommerce.model.Currency;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Cart {
@@ -17,7 +20,7 @@ public class Cart {
 	private Long id;
 
 	@OneToOne
-	@JsonIgnore
+	@JsonManagedReference
 	private User user;
 
 	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -25,9 +28,6 @@ public class Cart {
 
 	@Enumerated(EnumType.STRING)
 	private Currency currency = Currency.EUR;
-
-	@Transient
-	private BigDecimal totalAmount;
 
 	@Transient
 	private BigDecimal discountedAmount;
@@ -47,22 +47,25 @@ public class Cart {
 		return new ArrayList<>(this.cartItems);
 	}
 
-	public void setCartItems(List<CartItem> cartItems) {
-		this.cartItems = cartItems;
-	}
-
-	public void addCartItem(CartItem cartItem, int quantity) {
+	public void addCartItem(CartItem cartItem) {
 		this.cartItems.stream()
 				.filter(cartItem::equals)
 				.findAny()
-				.ifPresentOrElse(item -> item.increaseQuantityBy(quantity), () -> this.cartItems.add(cartItem));
+				.ifPresentOrElse(item -> item.increaseQuantityBy(cartItem.getQuantity()), () -> {
+					this.cartItems.add(cartItem);
+				});
 	}
 
 	public void removeCartItem(CartItem cartItem, int quantity) {
 		this.cartItems.stream()
 				.filter(cartItem::equals)
 				.findAny()
-				.ifPresentOrElse(item -> item.decreaseQuantityBy(quantity), () -> this.cartItems.remove(cartItem));
+				.ifPresentOrElse(item -> {
+					item.decreaseQuantityBy(quantity);
+					if(item.getQuantity() == 0) {
+						this.cartItems = new ArrayList<>();
+					}
+				}, () -> this.cartItems.remove(cartItem));
 	}
 
 	public User getUser() {
@@ -82,11 +85,11 @@ public class Cart {
 	}
 
 	public BigDecimal getTotalAmount() {
-		return totalAmount;
-	}
-
-	public void setTotalAmount(BigDecimal totalAmount) {
-		this.totalAmount = totalAmount.setScale(2, RoundingMode.HALF_UP);
+		return cartItems
+				.stream()
+				.map(CartItem::getAmount)
+				.reduce(BigDecimal.ZERO, BigDecimal::add)
+				.setScale(2, RoundingMode.HALF_UP);
 	}
 
 	public BigDecimal getDiscountedAmount() {
@@ -94,7 +97,23 @@ public class Cart {
 	}
 
 	public void setDiscountedAmount(BigDecimal discountedAmount) {
-		this.discountedAmount = discountedAmount.setScale(2, RoundingMode.HALF_UP);
+		if(discountedAmount == null) {
+			this.discountedAmount = getTotalAmount();
+		} else {
+			this.discountedAmount = discountedAmount.setScale(2, RoundingMode.HALF_UP);
+		}
 	}
 
+	@Override public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Cart cart = (Cart) o;
+		return Objects.equals(user, cart.user);
+	}
+
+	@Override public int hashCode() {
+		return Objects.hash(user);
+	}
 }

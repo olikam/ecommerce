@@ -3,6 +3,7 @@ package com.bestseller.ecommerce.model;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Comparator;
+import java.util.Objects;
 
 public class Amount implements Comparable<Amount>{
 
@@ -36,5 +37,18 @@ public class Amount implements Comparable<Amount>{
 
 	@Override public int compareTo(Amount that) {
 		return Comparator.comparing(Amount::getTotalAmount).compare(this, that);
+	}
+
+	@Override public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Amount amount = (Amount) o;
+		return Objects.equals(totalAmount, amount.totalAmount) && Objects.equals(discountedAmount, amount.discountedAmount);
+	}
+
+	@Override public int hashCode() {
+		return Objects.hash(totalAmount, discountedAmount);
 	}
 }

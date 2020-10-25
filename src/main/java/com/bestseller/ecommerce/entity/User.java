@@ -2,7 +2,10 @@ package com.bestseller.ecommerce.entity;
 
 import com.bestseller.ecommerce.entity.Cart;
 import com.bestseller.ecommerce.model.UserRole;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +15,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class User implements UserDetails {
@@ -46,6 +50,7 @@ public class User implements UserDetails {
 	private boolean enabled = true;
 
 	@OneToOne
+	@JsonBackReference
 	private Cart cart;
 
 	public User() {
@@ -106,6 +111,7 @@ public class User implements UserDetails {
 	}
 
 	@Override
+	@JsonIgnore
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of(new SimpleGrantedAuthority(userRole.name()));
 	}
@@ -162,4 +168,16 @@ public class User implements UserDetails {
 		this.userRole = userRole;
 	}
 
+	@Override public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		User user = (User) o;
+		return Objects.equals(phoneNumber, user.phoneNumber) && Objects.equals(username, user.username);
+	}
+
+	@Override public int hashCode() {
+		return Objects.hash(phoneNumber, username);
+	}
 }

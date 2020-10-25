@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-public class ProductRepositoryIntgTest {
+public class ProductRepositoryTest {
 
 	@Autowired
 	private TestEntityManager testEntityManager;
@@ -32,19 +32,37 @@ public class ProductRepositoryIntgTest {
 
 	@BeforeEach
 	public void setUp() {
-		testEntityManager.persist(drink);
-		testEntityManager.persist(topping);
+		Long drinkId = (Long) testEntityManager.persistAndGetId(drink);
+		drink.setId(drinkId);
+		Long toppingId = (Long) testEntityManager.persistAndGetId(topping);
+		topping.setId(toppingId);
 	}
 
 	@Test
-	public void testFindByNameContainingIgnoreCase() {
-		Optional<Product> optionalDrink = productRepository.findByNameContainingIgnoreCase("latte");
+	public void testFindByNameIgnoreCase() {
+		Optional<Product> optionalDrink = productRepository.findByNameIgnoreCase("latte");
 		assertThat(optionalDrink).isNotEmpty();
 		assertThat(optionalDrink.get().getName()).isEqualTo(drink.getName());
 
-		Optional<Product> optionalTopping = productRepository.findByNameContainingIgnoreCase("milk");
+		Optional<Product> optionalTopping = productRepository.findByNameIgnoreCase("milk");
 		assertThat(optionalTopping).isNotEmpty();
 		assertThat(optionalTopping.get().getName()).isEqualTo(topping.getName());
+	}
+
+	@Test
+	public void testFindById() {
+		Optional<Product> optionalDrink = productRepository.findById(drink.getId());
+		assertThat(optionalDrink).hasValue(drink);
+
+		Optional<Product> optionalTopping = productRepository.findById(topping.getId());
+		assertThat(optionalTopping).hasValue(topping);
+	}
+
+	@Test
+	public void testDelete() {
+		productRepository.delete(drink);
+		Optional<Product> optionalDrink = productRepository.findById(drink.getId());
+		assertThat(optionalDrink).isEmpty();
 	}
 
 }

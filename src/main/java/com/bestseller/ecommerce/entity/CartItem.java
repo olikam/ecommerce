@@ -1,6 +1,7 @@
 package com.bestseller.ecommerce.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -37,6 +38,7 @@ public class CartItem {
 
 	public void setProducts(List<Product> products) {
 		this.products = products;
+		increaseQuantityBy(1);
 	}
 
 	public Cart getCart() {
@@ -51,16 +53,15 @@ public class CartItem {
 		return quantity;
 	}
 
-	public void setQuantity(Integer quantity) {
-		this.quantity = quantity;
-	}
-
 	public void increaseQuantityBy(int n) {
 		this.quantity += n;
 	}
 
 	public void decreaseQuantityBy(int n) {
 		this.quantity = Math.max(this.quantity - n, 0);
+		if(quantity == 0) {
+			products = new ArrayList<>();
+		}
 	}
 
 	@JsonIgnore
@@ -76,16 +77,23 @@ public class CartItem {
 		return products;
 	}
 
-	@Override public boolean equals(Object o) {
+	@Override
+	public boolean equals(Object o) {
 		if (this == o)
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
 		CartItem cartItem = (CartItem) o;
-		return Objects.equals(products, cartItem.products);
+		if(products == null && cartItem.getProducts() == null) {
+			return true;
+		} else if(products == null || cartItem.getProducts() == null) {
+			return false;
+		}
+		return CollectionUtils.isEqualCollection(products, cartItem.products);
 	}
 
-	@Override public int hashCode() {
+	@Override
+	public int hashCode() {
 		return Objects.hash(products);
 	}
 }

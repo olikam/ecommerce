@@ -1,9 +1,8 @@
 package com.bestseller.ecommerce.service;
 
+import com.bestseller.ecommerce.entity.Product;
 import com.bestseller.ecommerce.exception.DuplicateProductException;
 import com.bestseller.ecommerce.exception.ProductNotFoundException;
-import com.bestseller.ecommerce.entity.Product;
-import com.bestseller.ecommerce.model.ProductType;
 import com.bestseller.ecommerce.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +20,6 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired
 	private ProductRepository productRepository;
 
-	@Autowired
-	private CartService cartService;
-
 	@Override
 	public List<Product> getAllProducts() {
 		return StreamSupport.stream(productRepository.findAll().spliterator(), false).collect(Collectors.toList());
@@ -36,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public void create(Product product){
-		productRepository.findByNameContainingIgnoreCase(product.getName()).ifPresent(p -> {
+		productRepository.findByNameIgnoreCase(product.getName()).ifPresent(p -> {
 			throw new DuplicateProductException(p.getName());
 		});
 		productRepository.save(product);
@@ -44,14 +40,14 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public void update(Product product) {
-		Long id = productRepository.findByNameContainingIgnoreCase(product.getName()).map(Product::getId).orElseThrow(() -> new ProductNotFoundException(product.getId()));
+		Long id = productRepository.findByNameIgnoreCase(product.getName()).map(Product::getId).orElseThrow(() -> new ProductNotFoundException(product.getId()));
 		product.setId(id);
 		productRepository.save(product);
 	}
 
 	@Override
 	public void delete(Long productId) {
-		productRepository.deleteById(productId);
+		productRepository.findById(productId).ifPresent(productRepository::delete);
 	}
 
 }

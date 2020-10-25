@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-public class CartRepositoryIntgTest {
+public class CartRepositoryTest {
 
 	@Autowired
 	private TestEntityManager testEntityManager;
@@ -48,8 +48,6 @@ public class CartRepositoryIntgTest {
 	private User user;
 
 	private List<Product> products;
-
-	private int quantity = 3;
 
 	@BeforeEach
 	public void setUp() {
@@ -71,23 +69,24 @@ public class CartRepositoryIntgTest {
 	}
 
 	@Test
-	public void test() {
+	public void testFind() {
 		CartItem cartItem = new CartItem();
-		cartItem.setQuantity(quantity);
 		cartItem.setProducts(products);
+		cartItem.increaseQuantityBy(2);
 		testEntityManager.persistAndFlush(cartItem);
+
 		List<CartItem> cartItems = StreamSupport.stream(cartItemRepository.findAll().spliterator(), false).collect(Collectors.toList());
 		assertThat(cartItems).isNotEmpty().contains(cartItem);
 
 		Cart cart = new Cart();
 		cart.setUser(user);
-		cart.setCartItems(cartItems);
+		cartItems.forEach(item -> cart.addCartItem(cartItem));
 		testEntityManager.persistAndFlush(cart);
 
 		Optional<Cart> optionalCart = cartRepository.findByUserId(user.getId());
 		assertThat(optionalCart).isNotEmpty();
 		assertThat(optionalCart.get().getUser().getId()).isEqualTo(user.getId());
 		assertThat(optionalCart.get().getCartItems()).isNotEmpty().contains(cartItem);
-		assertThat(optionalCart.get().getCartItems().iterator().next().getQuantity()).isEqualTo(quantity);
+		assertThat(optionalCart.get().getCartItems().iterator().next().getQuantity()).isEqualTo(3);
 	}
 }
