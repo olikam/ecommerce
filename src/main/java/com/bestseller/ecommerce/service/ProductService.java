@@ -10,7 +10,7 @@ public interface ProductService {
 
 	List<Product> getAllProducts();
 
-	Optional<Product> getProduct(Long id, ProductType type);
+	Optional<Product> getProduct(Long id);
 
 	void create(Product product);
 

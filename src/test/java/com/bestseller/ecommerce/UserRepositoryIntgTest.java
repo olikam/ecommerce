@@ -1,0 +1,49 @@
+package com.bestseller.ecommerce;
+
+import com.bestseller.ecommerce.entity.User;
+import com.bestseller.ecommerce.model.UserRole;
+import com.bestseller.ecommerce.repository.UserRepository;
+import org.junit.Test;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.*;
+
+@RunWith(SpringRunner.class)
+@DataJpaTest
+public class UserRepositoryIntgTest {
+
+	@Autowired
+	private TestEntityManager testEntityManager;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	private User user = new User("soner", "sezgin", "+905332108093", "esoner.sezgin@gmail.com", "", "1", UserRole.USER);
+
+	@Before
+	public void register() {
+		testEntityManager.persist(user);
+		testEntityManager.flush();
+	}
+
+	@Test
+	public void testFindByUsername() {
+		Optional<User> optionalUser = userRepository.findByUsername(user.getUsername());
+		assertThat(optionalUser).isNotEmpty();
+		assertThat(optionalUser.get().getUsername()).isEqualTo(user.getUsername());
+	}
+
+	@Test
+	public void testFindByPhoneNumber() {
+		Optional<User> optionalUser = userRepository.findByPhoneNumber(user.getPhoneNumber());
+		assertThat(optionalUser).isNotEmpty();
+		assertThat(optionalUser.get().getPhoneNumber()).isEqualTo(user.getPhoneNumber());
+	}
+}

@@ -30,8 +30,8 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Optional<Product> getProduct(Long id, ProductType type) {
-		return productRepository.findByIdAndType(id, type);
+	public Optional<Product> getProduct(Long id) {
+		return productRepository.findById(id);
 	}
 
 	@Override

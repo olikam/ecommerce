@@ -12,6 +12,4 @@ import java.util.Optional;
 public interface ProductRepository extends CrudRepository<Product, Long> {
 
 	Optional<Product> findByNameContainingIgnoreCase(String name);
-
-	Optional<Product> findByIdAndType(Long id, ProductType type);
 }

@@ -74,12 +74,12 @@ public class CartServiceImpl implements CartService {
 
 	private List<Product> getProductsByIds(AddItemRequest addItemRequest) {
 		List<Product> products = new ArrayList<>();
-		Product drink = productService.getProduct(addItemRequest.getDrinkId(), ProductType.DRINK)
+		Product drink = productService.getProduct(addItemRequest.getDrinkId())
 				.orElseThrow(() -> new ProductNotFoundException(addItemRequest.getDrinkId()));
 		products.add(drink);
 
 		addItemRequest.getToppingIds().stream()
-				.map(id -> productService.getProduct(id, ProductType.TOPPING).orElseThrow(() -> new ProductNotFoundException(id)))
+				.map(id -> productService.getProduct(id).orElseThrow(() -> new ProductNotFoundException(id)))
 				.sorted()
 				.forEach(products::add);
 
