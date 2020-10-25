@@ -3,19 +3,19 @@ package com.bestseller.ecommerce;
 import com.bestseller.ecommerce.entity.User;
 import com.bestseller.ecommerce.model.UserRole;
 import com.bestseller.ecommerce.repository.UserRepository;
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 public class UserRepositoryIntgTest {
 
@@ -27,8 +27,8 @@ public class UserRepositoryIntgTest {
 
 	private User user = new User("soner", "sezgin", "+905332108093", "esoner.sezgin@gmail.com", "", "1", UserRole.USER);
 
-	@Before
-	public void register() {
+	@BeforeEach
+	public void setUp() {
 		testEntityManager.persist(user);
 		testEntityManager.flush();
 	}

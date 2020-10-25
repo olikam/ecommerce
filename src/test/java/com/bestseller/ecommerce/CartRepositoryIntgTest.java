@@ -10,17 +10,15 @@ import com.bestseller.ecommerce.repository.CartItemRepository;
 import com.bestseller.ecommerce.repository.CartRepository;
 import com.bestseller.ecommerce.repository.ProductRepository;
 import com.bestseller.ecommerce.repository.UserRepository;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,7 +26,7 @@ import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 public class CartRepositoryIntgTest {
 
@@ -53,8 +51,8 @@ public class CartRepositoryIntgTest {
 
 	private int quantity = 3;
 
-	@Before
-	public void before() {
+	@BeforeEach
+	public void setUp() {
 		user = new User("soner", "sezgin", "+905332108093", "esoner.sezgin@gmail.com", "", "1", UserRole.USER);
 		testEntityManager.persistAndFlush(user);
 		Optional<User> optionalUser = userRepository.findByUsername(user.getUsername());
@@ -73,7 +71,7 @@ public class CartRepositoryIntgTest {
 	}
 
 	@Test
-	public void testFindByUserId() {
+	public void test() {
 		CartItem cartItem = new CartItem();
 		cartItem.setQuantity(quantity);
 		cartItem.setProducts(products);
@@ -90,5 +88,6 @@ public class CartRepositoryIntgTest {
 		assertThat(optionalCart).isNotEmpty();
 		assertThat(optionalCart.get().getUser().getId()).isEqualTo(user.getId());
 		assertThat(optionalCart.get().getCartItems()).isNotEmpty().contains(cartItem);
+		assertThat(optionalCart.get().getCartItems().iterator().next().getQuantity()).isEqualTo(quantity);
 	}
 }

@@ -3,18 +3,20 @@ package com.bestseller.ecommerce;
 import com.bestseller.ecommerce.entity.Product;
 import com.bestseller.ecommerce.model.ProductType;
 import com.bestseller.ecommerce.repository.ProductRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.junit4.SpringRunner;
-import static org.assertj.core.api.Assertions.*;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import java.math.BigDecimal;
 import java.util.Optional;
 
-@RunWith(SpringRunner.class)
+import static org.assertj.core.api.Assertions.assertThat;
+
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 public class ProductRepositoryIntgTest {
 
@@ -28,8 +30,8 @@ public class ProductRepositoryIntgTest {
 
 	private Product topping = new Product("Milk", new BigDecimal("2.0"), ProductType.TOPPING);
 
-	@Before
-	public void saveProduct() {
+	@BeforeEach
+	public void setUp() {
 		testEntityManager.persist(drink);
 		testEntityManager.persist(topping);
 	}
