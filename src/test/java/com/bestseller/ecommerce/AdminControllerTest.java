@@ -48,16 +48,25 @@ public class AdminControllerTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	private static final User admin = new User();
+
 	private static final User user = new User();
 
 	@BeforeAll
 	public static void setUp() {
-		user.setId(1L);
+		admin.setId(1L);
+		admin.setUsername("paul.muaddib@arrakis.com");
+		admin.setFirstName("pual");
+		admin.setLastName("muaddib");
+		admin.setPhoneNumber("00000000000");
+		admin.setUserRole(UserRole.ADMIN);
+
+		user.setId(2L);
 		user.setUsername("esoner.sezgin@gmail.com");
 		user.setFirstName("soner");
 		user.setLastName("sezgin");
 		user.setPhoneNumber("+905332108093");
-		user.setUserRole(UserRole.ADMIN);
+		user.setUserRole(UserRole.USER);
 	}
 
 	@Test
@@ -65,11 +74,67 @@ public class AdminControllerTest {
 		ProductCreateUpdateRequest request = createProductRequest();
 
 		mvc.perform(post("/api/admin")
-				.with(user(user))
+				.with(user(admin))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
 			.andExpect(status().isCreated())
 			.andReturn();
+	}
+
+	@Test
+	public void testCreateUnauthorized() throws Exception {
+		ProductCreateUpdateRequest request = createProductRequest();
+
+		mvc.perform(post("/api/admin")
+				.with(user(user))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(request)))
+				.andExpect(status().isForbidden())
+				.andReturn();
+	}
+
+	@Test
+	public void testUpdate() throws Exception {
+		ProductCreateUpdateRequest request = createProductRequest();
+
+		mvc.perform(put("/api/admin")
+				.with(user(admin))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(request)))
+				.andExpect(status().isOk())
+				.andReturn();
+	}
+
+	@Test
+	public void testUpdateUnauthorized() throws Exception {
+		ProductCreateUpdateRequest request = createProductRequest();
+
+		mvc.perform(put("/api/admin")
+				.with(user(user))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(request)))
+				.andExpect(status().isForbidden())
+				.andReturn();
+	}
+
+	@Test
+	public void testDeleteUnauthorized() throws Exception {
+		mvc.perform(delete("/api/admin")
+				.with(user(user))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("5"))
+				.andExpect(status().isForbidden())
+				.andReturn();
+	}
+
+	@Test
+	public void testDelete() throws Exception {
+		mvc.perform(delete("/api/admin")
+				.with(user(admin))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("5"))
+				.andExpect(status().isOk())
+				.andReturn();
 	}
 
 	private ProductCreateUpdateRequest createProductRequest() {
@@ -78,28 +143,6 @@ public class AdminControllerTest {
 		request.setPrice(7.0D);
 		request.setType(ProductType.DRINK);
 		return request;
-	}
-
-	@Test
-	public void testUpdate() throws Exception {
-		ProductCreateUpdateRequest request = createProductRequest();
-
-		mvc.perform(put("/api/admin")
-				.with(user(user))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(request)))
-				.andExpect(status().isOk())
-				.andReturn();
-	}
-
-	@Test
-	public void testDelete() throws Exception {
-		mvc.perform(delete("/api/admin")
-				.with(user(user))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content("5"))
-				.andExpect(status().isOk())
-				.andReturn();
 	}
 
 	private String asJsonString(Object obj) {
