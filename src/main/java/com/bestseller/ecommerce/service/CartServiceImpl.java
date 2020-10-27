@@ -5,17 +5,16 @@ import com.bestseller.ecommerce.entity.CartItem;
 import com.bestseller.ecommerce.entity.Product;
 import com.bestseller.ecommerce.entity.User;
 import com.bestseller.ecommerce.exception.ProductNotFoundException;
-import com.bestseller.ecommerce.model.*;
+import com.bestseller.ecommerce.model.AddItemRequest;
+import com.bestseller.ecommerce.model.DeleteItemRequest;
 import com.bestseller.ecommerce.repository.CartItemRepository;
 import com.bestseller.ecommerce.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Transactional
@@ -45,7 +44,6 @@ public class CartServiceImpl implements CartService {
 		Cart cart = getCart(user);
 		CartItem newCartItem = createCartItem(addItemRequest);
 		newCartItem.setCart(cart);
-		newCartItem.increaseQuantityBy(addItemRequest.getQuantity());
 		cart.getCartItems().stream()
 				.filter(newCartItem::equals)
 				.findAny()
@@ -63,8 +61,7 @@ public class CartServiceImpl implements CartService {
 
 	private CartItem createCartItem(AddItemRequest addItemRequest) {
 		CartItem newCartItem = new CartItem();
-		newCartItem.setProducts(getProductsByIds(addItemRequest));
-		newCartItem.increaseQuantityBy(addItemRequest.getQuantity());
+		newCartItem.setProducts(getProductsByIds(addItemRequest), addItemRequest.getQuantity());
 		return cartItemRepository.save(newCartItem);
 	}
 

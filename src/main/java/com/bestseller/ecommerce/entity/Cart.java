@@ -1,7 +1,6 @@
 package com.bestseller.ecommerce.entity;
 
 import com.bestseller.ecommerce.model.Currency;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -20,7 +19,7 @@ public class Cart {
 	private Long id;
 
 	@OneToOne
-	@JsonManagedReference
+	@JsonIgnore
 	private User user;
 
 	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -60,12 +59,13 @@ public class Cart {
 		this.cartItems.stream()
 				.filter(cartItem::equals)
 				.findAny()
-				.ifPresentOrElse(item -> {
-					item.decreaseQuantityBy(quantity);
-					if(item.getQuantity() == 0) {
-						this.cartItems = new ArrayList<>();
+				.ifPresent(item -> {
+					if(quantity >= item.getQuantity()) {
+						this.cartItems.remove(item);
+					} else {
+						item.decreaseQuantityBy(quantity);
 					}
-				}, () -> this.cartItems.remove(cartItem));
+				});
 	}
 
 	public User getUser() {

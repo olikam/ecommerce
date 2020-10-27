@@ -3,6 +3,7 @@ package com.bestseller.ecommerce;
 import com.bestseller.ecommerce.config.AuthExceptionHandler;
 import com.bestseller.ecommerce.controller.AdminController;
 import com.bestseller.ecommerce.entity.User;
+import com.bestseller.ecommerce.model.DeleteProductRequest;
 import com.bestseller.ecommerce.model.ProductCreateUpdateRequest;
 import com.bestseller.ecommerce.model.ProductType;
 import com.bestseller.ecommerce.model.UserRole;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -28,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(AdminController.class)
 @WithMockUser
+@ActiveProfiles("test")
 public class AdminControllerTest {
 
 	@Autowired
@@ -56,7 +59,7 @@ public class AdminControllerTest {
 	public static void setUp() {
 		admin.setId(1L);
 		admin.setUsername("paul.muaddib@arrakis.com");
-		admin.setFirstName("pual");
+		admin.setFirstName("paul");
 		admin.setLastName("muaddib");
 		admin.setPhoneNumber("00000000000");
 		admin.setUserRole(UserRole.ADMIN);
@@ -77,8 +80,7 @@ public class AdminControllerTest {
 				.with(user(admin))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
-			.andExpect(status().isCreated())
-			.andReturn();
+				.andExpect(status().isCreated());
 	}
 
 	@Test
@@ -89,8 +91,7 @@ public class AdminControllerTest {
 				.with(user(user))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
-				.andExpect(status().isForbidden())
-				.andReturn();
+				.andExpect(status().isForbidden());
 	}
 
 	@Test
@@ -101,8 +102,7 @@ public class AdminControllerTest {
 				.with(user(admin))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
-				.andExpect(status().isOk())
-				.andReturn();
+				.andExpect(status().isOk());
 	}
 
 	@Test
@@ -113,8 +113,7 @@ public class AdminControllerTest {
 				.with(user(user))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
-				.andExpect(status().isForbidden())
-				.andReturn();
+				.andExpect(status().isForbidden());
 	}
 
 	@Test
@@ -122,19 +121,20 @@ public class AdminControllerTest {
 		mvc.perform(delete("/api/admin")
 				.with(user(user))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content("5"))
-				.andExpect(status().isForbidden())
-				.andReturn();
+				.param("productId", "5"))
+				.andExpect(status().isForbidden());
 	}
 
 	@Test
 	public void testDelete() throws Exception {
+		DeleteProductRequest request = new DeleteProductRequest();
+		request.setProductId(5L);
+
 		mvc.perform(delete("/api/admin")
 				.with(user(admin))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content("5"))
-				.andExpect(status().isOk())
-				.andReturn();
+				.content(asJsonString(request)))
+				.andExpect(status().isOk());
 	}
 
 	private ProductCreateUpdateRequest createProductRequest() {

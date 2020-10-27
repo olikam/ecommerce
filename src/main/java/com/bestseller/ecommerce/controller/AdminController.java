@@ -1,6 +1,7 @@
 package com.bestseller.ecommerce.controller;
 
 import com.bestseller.ecommerce.entity.Product;
+import com.bestseller.ecommerce.model.DeleteProductRequest;
 import com.bestseller.ecommerce.model.ProductCreateUpdateRequest;
 import com.bestseller.ecommerce.model.Report;
 import com.bestseller.ecommerce.service.ProductService;
@@ -11,11 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -45,12 +43,12 @@ public class AdminController {
 	}
 
 	@DeleteMapping
-	public ResponseEntity<String> delete(@Valid @NotNull @PositiveOrZero Long productId) {
-		productService.delete(productId);
+	public ResponseEntity<String> delete(@Valid @RequestBody DeleteProductRequest deleteProductRequest) {
+		productService.delete(deleteProductRequest.getProductId());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	private Product createProduct(@Valid @RequestBody ProductCreateUpdateRequest productCreateUpdateRequest) {
+	private Product createProduct(ProductCreateUpdateRequest productCreateUpdateRequest) {
 		return new Product(productCreateUpdateRequest.getName(), BigDecimal.valueOf(productCreateUpdateRequest.getPrice()).setScale(2, RoundingMode.HALF_UP), productCreateUpdateRequest
 				.getType());
 	}

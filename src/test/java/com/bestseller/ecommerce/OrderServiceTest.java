@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
+@ActiveProfiles("test")
 public class OrderServiceTest {
 
 	@TestConfiguration
@@ -73,7 +75,7 @@ public class OrderServiceTest {
 	@MockBean
 	private ProductRepository productRepository;
 
-	private static final User user = new User("soner", "sezgin", "+905332108093", "esoner.sezgin@gmail.com", "", "1", UserRole.USER);
+	private static final User user = new User("soner", "sezgin", "+905332108093", "esoner.sezgin@gmail.com", UserRole.USER, "", "1");
 
 	@BeforeAll
 	public static void setUp() {
@@ -101,11 +103,11 @@ public class OrderServiceTest {
 		order2.setUsername(user.getUsername());
 
 		Order order3 = new Order();
-		User user2 = new User("paul", "muaddib", "+905332108093", "paul.muaddib@arrakis.com", "", "1", UserRole.ADMIN);
+		User user2 = new User("paul", "muaddib", "+905332108093", "paul.muaddib@arrakis.com", UserRole.ADMIN, "", "1");
 		order3.setUsername(user2.getUsername());
 
 		Order order4 = new Order();
-		User user3 = new User("turin", "turambar", "+905332108093", "turin.turambar@gurthang.com", "", "1", UserRole.ADMIN);
+		User user3 = new User("turin", "turambar", "+905332108093", "turin.turambar@gurthang.com", UserRole.ADMIN, "", "1");
 		order4.setUsername(user3.getUsername());
 
 		List<Order> expected = List.of(order1, order2, order3, order4);

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
@@ -30,6 +31,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
+@ActiveProfiles("test")
 public class CartServiceTest {
 
 	@TestConfiguration
@@ -71,7 +73,7 @@ public class CartServiceTest {
 
 	private Cart cart = new Cart();
 
-	private User user = new User("soner", "sezgin", "+905332108093", "esoner.sezgin@gmail.com", "", "1", UserRole.USER);
+	private User user = new User("soner", "sezgin", "+905332108093", "esoner.sezgin@gmail.com", UserRole.USER, "", "1");
 
 	@BeforeEach
 	public void setUp() {
@@ -103,14 +105,12 @@ public class CartServiceTest {
 		products1.add(latte);
 		products1.add(choco);
 		CartItem item1 = new CartItem();
-		item1.setProducts(products1);
-		item1.increaseQuantityBy(3);
+		item1.setProducts(products1, 3);
 
 		List<Product> products2 = new ArrayList<>();
 		products2.add(blackCoffee);
 		CartItem item2 = new CartItem();
-		item2.setProducts(products2);
-		item2.increaseQuantityBy(2);
+		item2.setProducts(products2, 2);
 
 		cart.addCartItem(item1);
 		cart.addCartItem(item2);
@@ -139,8 +139,7 @@ public class CartServiceTest {
 
 		// Create reference cartItem using products above
 		CartItem cartItem = new CartItem();
-		cartItem.setProducts(products);
-		cartItem.increaseQuantityBy(3);
+		cartItem.setProducts(products, 3);
 
 		// Create add addItemRequest so as to create exactly same as the cartItem above
 		AddItemRequest addItemRequest = new AddItemRequest();
@@ -235,9 +234,8 @@ public class CartServiceTest {
 		products.add(choco);
 
 		CartItem cartItem = new CartItem();
-		cartItem.setProducts(products);
+		cartItem.setProducts(products, quantity);
 		cartItem.setId(1L);
-		cartItem.increaseQuantityBy(quantity - 1);
 		cart.addCartItem(cartItem);
 	}
 

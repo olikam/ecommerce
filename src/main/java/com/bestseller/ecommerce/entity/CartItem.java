@@ -41,6 +41,11 @@ public class CartItem {
 		increaseQuantityBy(1);
 	}
 
+	public void setProducts(List<Product> products, int quantity) {
+		this.products = products;
+		this.quantity = quantity;
+	}
+
 	public Cart getCart() {
 		return cart;
 	}

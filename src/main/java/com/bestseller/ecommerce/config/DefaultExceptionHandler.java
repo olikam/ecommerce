@@ -8,9 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class DefaultExceptionHandler {
@@ -46,8 +50,15 @@ public class DefaultExceptionHandler {
 		return new ResponseEntity<>("This user is already registered: " + e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+		logger.error(e.getMessage());
+		String message = e.getBindingResult().getAllErrors().stream().map(ObjectError::getDefaultMessage).collect(Collectors.joining(", "));
+		return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+	}
+
 	@ExceptionHandler(value = Exception.class)
-	public ResponseEntity<Object> handleOtherException(Exception e) {
+	public ResponseEntity<Object> handleException(Exception e) {
 		logger.error(e.getMessage());
 		return new ResponseEntity<>("There is an unexpected error.", HttpStatus.BAD_REQUEST);
 	}

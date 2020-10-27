@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
@@ -28,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
+@ActiveProfiles("test")
 public class CartRepositoryTest {
 
 	@Autowired
@@ -51,7 +53,7 @@ public class CartRepositoryTest {
 
 	@BeforeEach
 	public void setUp() {
-		user = new User("soner", "sezgin", "+905332108093", "esoner.sezgin@gmail.com", "", "1", UserRole.USER);
+		user = new User("soner", "sezgin", "+905332108093", "esoner.sezgin@gmail.com", UserRole.USER, "", "1");
 		testEntityManager.persistAndFlush(user);
 		Optional<User> optionalUser = userRepository.findByUsername(user.getUsername());
 		assertThat(optionalUser).isNotEmpty();
@@ -70,11 +72,7 @@ public class CartRepositoryTest {
 
 	@Test
 	public void testFind() {
-		CartItem cartItem = new CartItem();
-		cartItem.setProducts(products);
-		cartItem.increaseQuantityBy(2);
-		testEntityManager.persistAndFlush(cartItem);
-
+		CartItem cartItem = persistCartItems();
 		List<CartItem> cartItems = StreamSupport.stream(cartItemRepository.findAll().spliterator(), false).collect(Collectors.toList());
 		assertThat(cartItems).isNotEmpty().contains(cartItem);
 
@@ -87,6 +85,13 @@ public class CartRepositoryTest {
 		assertThat(optionalCart).isNotEmpty();
 		assertThat(optionalCart.get().getUser().getId()).isEqualTo(user.getId());
 		assertThat(optionalCart.get().getCartItems()).isNotEmpty().contains(cartItem);
-		assertThat(optionalCart.get().getCartItems().iterator().next().getQuantity()).isEqualTo(3);
+		assertThat(optionalCart.get().getCartItems().iterator().next().getQuantity()).isEqualTo(2);
+	}
+
+	private CartItem persistCartItems() {
+		CartItem cartItem = new CartItem();
+		cartItem.setProducts(products, 2);
+		testEntityManager.persistAndFlush(cartItem);
+		return cartItem;
 	}
 }
