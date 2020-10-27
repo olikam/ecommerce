@@ -31,7 +31,9 @@ public class RequestFilter extends OncePerRequestFilter {
 			try {
 				username = JwtUtil.extractUsername(authHeader);
 			} catch (ExpiredJwtException e) {
-				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Session is expired");
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				response.getWriter().write("Session is expired. Please login again.");
+				return;
 			}
 		}
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
