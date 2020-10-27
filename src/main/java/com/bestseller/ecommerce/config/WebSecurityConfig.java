@@ -35,6 +35,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.exceptionHandling().authenticationEntryPoint(authExceptionHandler).and()
 				.authorizeRequests()
+				.antMatchers("/swagger-resources", "/swagger-resources/**", "/configuration/ui", "/configuration/security", "/swagger-ui.html").permitAll()
 				.antMatchers("/api/admin/**").hasAuthority(UserRole.ADMIN.name())
 				.antMatchers("/api/cart/**").hasAnyAuthority(UserRole.ADMIN.name(), UserRole.USER.name())
 				.anyRequest().authenticated().and()
@@ -43,7 +44,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/h2-console/**").antMatchers("/api/auth/**");
+		web.ignoring().antMatchers("/h2-console/**", "/api/auth/**", "/swagger-resources",
+				"/swagger-resources/**",
+				"/configuration/ui",
+				"/configuration/security",
+				"/swagger-ui.html",
+				"/v2/api-docs");
 	}
 
 	@Autowired
