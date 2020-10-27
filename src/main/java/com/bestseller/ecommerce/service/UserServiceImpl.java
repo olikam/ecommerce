@@ -3,6 +3,8 @@ package com.bestseller.ecommerce.service;
 import com.bestseller.ecommerce.entity.User;
 import com.bestseller.ecommerce.exception.UserAlreadyExistsException;
 import com.bestseller.ecommerce.repository.UserRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,6 +18,8 @@ import java.util.stream.StreamSupport;
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
+
+	private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
 
 	@Autowired
 	private UserRepository userRepository;
@@ -35,6 +39,7 @@ public class UserServiceImpl implements UserService {
 			throw new UserAlreadyExistsException(u.getPhoneNumber());
 		});
 		userRepository.save(user);
+		logger.info("User created successfully: " + user);
 	}
 
 	/**

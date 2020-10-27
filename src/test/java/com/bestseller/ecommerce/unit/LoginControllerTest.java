@@ -1,4 +1,4 @@
-package com.bestseller.ecommerce;
+package com.bestseller.ecommerce.unit;
 
 import com.bestseller.ecommerce.config.AuthExceptionHandler;
 import com.bestseller.ecommerce.controller.LoginController;
@@ -134,8 +134,7 @@ public class LoginControllerTest {
 		Mockito.when(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()))).thenReturn(authentication);
 		MvcResult mvcResult = mvc.perform(post("/api/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("username", user.getUsername())
-				.param("password", user.getPassword()))
+				.content(asJsonString(user)))
 				.andExpect(status().isOk())
 				.andReturn();
 

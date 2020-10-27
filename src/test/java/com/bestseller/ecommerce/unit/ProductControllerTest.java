@@ -1,4 +1,4 @@
-package com.bestseller.ecommerce;
+package com.bestseller.ecommerce.unit;
 
 import com.bestseller.ecommerce.config.AuthExceptionHandler;
 import com.bestseller.ecommerce.controller.ProductController;

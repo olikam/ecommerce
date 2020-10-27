@@ -1,4 +1,4 @@
-package com.bestseller.ecommerce;
+package com.bestseller.ecommerce.unit;
 
 import com.bestseller.ecommerce.entity.User;
 import com.bestseller.ecommerce.exception.UserAlreadyExistsException;

@@ -1,9 +1,11 @@
-package com.bestseller.ecommerce;
+package com.bestseller.ecommerce.unit;
 
 import com.bestseller.ecommerce.entity.Product;
 import com.bestseller.ecommerce.exception.DuplicateProductException;
 import com.bestseller.ecommerce.exception.ProductNotFoundException;
 import com.bestseller.ecommerce.model.ProductType;
+import com.bestseller.ecommerce.model.ProductUpdateRequest;
+import com.bestseller.ecommerce.repository.CartItemRepository;
 import com.bestseller.ecommerce.repository.ProductRepository;
 import com.bestseller.ecommerce.service.ProductService;
 import com.bestseller.ecommerce.service.ProductServiceImpl;
@@ -44,6 +46,9 @@ public class ProductServiceTest {
 
 	@MockBean
 	private ProductRepository productRepository;
+
+	@MockBean
+	private CartItemRepository cartItemRepository;
 
 	private static final Product latte = new Product("Latte", new BigDecimal("5.0"), ProductType.DRINK);
 
@@ -106,9 +111,23 @@ public class ProductServiceTest {
 	}
 
 	@Test
+	public void testUpdate() {
+		ProductUpdateRequest request = new ProductUpdateRequest();
+		request.setId(latte.getId());
+		request.setName("Non-latte");
+		request.setPrice(12.0D);
+		Mockito.when(productRepository.findById(latte.getId())).thenReturn(Optional.of(latte));
+		Assertions.assertDoesNotThrow(() -> productService.update(request));
+	}
+
+	@Test
 	public void testUpdateException() {
-		Mockito.when(productRepository.findByNameIgnoreCase(latte.getName())).thenReturn(Optional.empty());
-		Assertions.assertThrows(ProductNotFoundException.class, () -> productService.update(latte));
+		ProductUpdateRequest request = new ProductUpdateRequest();
+		request.setId(latte.getId());
+		request.setName("Non-latte");
+		request.setPrice(12.0D);
+		Mockito.when(productRepository.findById(latte.getId())).thenReturn(Optional.empty());
+		Assertions.assertThrows(ProductNotFoundException.class, () -> productService.update(request));
 	}
 
 	@Test

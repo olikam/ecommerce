@@ -1,6 +1,7 @@
 package com.bestseller.ecommerce.controller;
 
 import com.bestseller.ecommerce.entity.User;
+import com.bestseller.ecommerce.model.LoginRequest;
 import com.bestseller.ecommerce.service.UserService;
 import com.bestseller.ecommerce.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -32,9 +35,9 @@ public class LoginController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestParam @NotNull String username, @RequestParam @NotNull String password) {
+	public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
 		if (SecurityContextHolder.getContext().getAuthentication() == null) {
-			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			User user = (User) authentication.getPrincipal();
 			return new ResponseEntity<>(JwtUtil.generateToken(user), HttpStatus.OK);

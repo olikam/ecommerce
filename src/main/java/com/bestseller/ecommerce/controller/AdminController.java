@@ -1,8 +1,9 @@
 package com.bestseller.ecommerce.controller;
 
 import com.bestseller.ecommerce.entity.Product;
-import com.bestseller.ecommerce.model.DeleteProductRequest;
-import com.bestseller.ecommerce.model.ProductCreateUpdateRequest;
+import com.bestseller.ecommerce.model.ProductCreateRequest;
+import com.bestseller.ecommerce.model.ProductDeleteRequest;
+import com.bestseller.ecommerce.model.ProductUpdateRequest;
 import com.bestseller.ecommerce.model.Report;
 import com.bestseller.ecommerce.service.ProductService;
 import com.bestseller.ecommerce.service.ReportService;
@@ -31,25 +32,23 @@ public class AdminController {
 	}
 
 	@PostMapping
-	public ResponseEntity<String> create(@Valid @RequestBody ProductCreateUpdateRequest productCreateUpdateRequest) {
-		productService.create(createProduct(productCreateUpdateRequest));
+	public ResponseEntity<String> create(@Valid @RequestBody ProductCreateRequest productCreateRequest) {
+		Product newProduct = new Product(productCreateRequest.getName(),
+				BigDecimal.valueOf(productCreateRequest.getPrice()).setScale(2, RoundingMode.HALF_UP),
+				productCreateRequest.getType());
+		productService.create(newProduct);
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
-	@PutMapping
-	public ResponseEntity<String> update(@Valid @RequestBody ProductCreateUpdateRequest productCreateUpdateRequest) {
-		productService.update(createProduct(productCreateUpdateRequest));
+	@PatchMapping
+	public ResponseEntity<String> update(@Valid @RequestBody ProductUpdateRequest productUpdateRequest) {
+		productService.update(productUpdateRequest);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@DeleteMapping
-	public ResponseEntity<String> delete(@Valid @RequestBody DeleteProductRequest deleteProductRequest) {
-		productService.delete(deleteProductRequest.getProductId());
+	public ResponseEntity<String> delete(@Valid @RequestBody ProductDeleteRequest productDeleteRequest) {
+		productService.delete(productDeleteRequest.getProductId());
 		return new ResponseEntity<>(HttpStatus.OK);
-	}
-
-	private Product createProduct(ProductCreateUpdateRequest productCreateUpdateRequest) {
-		return new Product(productCreateUpdateRequest.getName(), BigDecimal.valueOf(productCreateUpdateRequest.getPrice()).setScale(2, RoundingMode.HALF_UP), productCreateUpdateRequest
-				.getType());
 	}
 }

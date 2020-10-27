@@ -2,7 +2,6 @@ package com.bestseller.ecommerce.entity;
 
 import com.bestseller.ecommerce.model.Currency;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -22,7 +21,7 @@ public class Cart {
 	@JsonIgnore
 	private User user;
 
-	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private List<CartItem> cartItems = new ArrayList<>();
 
 	@Enumerated(EnumType.STRING)
@@ -43,16 +42,15 @@ public class Cart {
 	}
 
 	public List<CartItem> getCartItems() {
-		return new ArrayList<>(this.cartItems);
+		return this.cartItems;
 	}
 
 	public void addCartItem(CartItem cartItem) {
 		this.cartItems.stream()
 				.filter(cartItem::equals)
 				.findAny()
-				.ifPresentOrElse(item -> item.increaseQuantityBy(cartItem.getQuantity()), () -> {
-					this.cartItems.add(cartItem);
-				});
+				.ifPresentOrElse(item -> item.increaseQuantityBy(cartItem.getQuantity()),
+						() -> this.cartItems.add(cartItem));
 	}
 
 	public void removeCartItem(CartItem cartItem, int quantity) {
@@ -66,6 +64,10 @@ public class Cart {
 						item.decreaseQuantityBy(quantity);
 					}
 				});
+	}
+
+	public void emptyCart() {
+		this.cartItems.clear();
 	}
 
 	public User getUser() {

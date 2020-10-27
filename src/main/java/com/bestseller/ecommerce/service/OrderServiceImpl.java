@@ -5,6 +5,8 @@ import com.bestseller.ecommerce.model.OrderStatus;
 import com.bestseller.ecommerce.model.ProductType;
 import com.bestseller.ecommerce.repository.OrderProductRepository;
 import com.bestseller.ecommerce.repository.OrderRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,8 @@ import java.util.stream.StreamSupport;
 @Service
 @Transactional
 public class OrderServiceImpl implements OrderService {
+
+	private static final Logger logger = LogManager.getLogger(OrderServiceImpl.class);
 
 	@Autowired
 	private OrderRepository orderRepository;
@@ -48,6 +52,7 @@ public class OrderServiceImpl implements OrderService {
 	public Order create(User user) {
 		Order order = orderRepository.save(createOrderFromCart(user));
 		cartService.empty(user);
+		logger.info("Order created successfully - User: " + user.getId() + " - Order details: " + order);
 		return order;
 	}
 

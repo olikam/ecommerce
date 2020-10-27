@@ -16,11 +16,11 @@ public class CartItem {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	private List<Product> products = new ArrayList<>();
 
 	@JsonIgnore
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Cart cart;
 
 	private Integer quantity = 0;
@@ -65,7 +65,7 @@ public class CartItem {
 	public void decreaseQuantityBy(int n) {
 		this.quantity = Math.max(this.quantity - n, 0);
 		if(quantity == 0) {
-			products = new ArrayList<>();
+			products.clear();
 		}
 	}
 
@@ -100,5 +100,9 @@ public class CartItem {
 	@Override
 	public int hashCode() {
 		return Objects.hash(products);
+	}
+
+	@Override public String toString() {
+		return "CartItem{" + "id=" + id + ", products=" + products + ", cart=" + cart + ", quantity=" + quantity + '}';
 	}
 }

@@ -30,7 +30,7 @@ public class Product implements Comparable<Product> {
 	private ProductType type;
 
 	@JsonIgnore
-	@ManyToMany(mappedBy = "products", cascade = CascadeType.ALL)
+	@ManyToMany(mappedBy = "products", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private List<CartItem> cartItem = new ArrayList<>();
 
 	public Product() {
@@ -99,5 +99,9 @@ public class Product implements Comparable<Product> {
 
 	@Override public int compareTo(Product that) {
 		return Comparator.comparing(Product::getType).thenComparing(Product::getName).compare(this, that);
+	}
+
+	@Override public String toString() {
+		return "Product{" + "id=" + id + ", name='" + name + '\'' + ", price=" + price + ", type=" + type + '}';
 	}
 }

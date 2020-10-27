@@ -1,12 +1,9 @@
-package com.bestseller.ecommerce;
+package com.bestseller.ecommerce.unit;
 
 import com.bestseller.ecommerce.config.AuthExceptionHandler;
 import com.bestseller.ecommerce.controller.AdminController;
 import com.bestseller.ecommerce.entity.User;
-import com.bestseller.ecommerce.model.DeleteProductRequest;
-import com.bestseller.ecommerce.model.ProductCreateUpdateRequest;
-import com.bestseller.ecommerce.model.ProductType;
-import com.bestseller.ecommerce.model.UserRole;
+import com.bestseller.ecommerce.model.*;
 import com.bestseller.ecommerce.service.ProductService;
 import com.bestseller.ecommerce.service.ReportService;
 import com.bestseller.ecommerce.service.UserService;
@@ -74,7 +71,7 @@ public class AdminControllerTest {
 
 	@Test
 	public void testCreate() throws Exception {
-		ProductCreateUpdateRequest request = createProductRequest();
+		ProductCreateRequest request = createProductCreateRequest();
 
 		mvc.perform(post("/api/admin")
 				.with(user(admin))
@@ -85,7 +82,7 @@ public class AdminControllerTest {
 
 	@Test
 	public void testCreateUnauthorized() throws Exception {
-		ProductCreateUpdateRequest request = createProductRequest();
+		ProductCreateRequest request = createProductCreateRequest();
 
 		mvc.perform(post("/api/admin")
 				.with(user(user))
@@ -96,9 +93,9 @@ public class AdminControllerTest {
 
 	@Test
 	public void testUpdate() throws Exception {
-		ProductCreateUpdateRequest request = createProductRequest();
+		ProductUpdateRequest request = createProductUpdateRequest();
 
-		mvc.perform(put("/api/admin")
+		mvc.perform(patch("/api/admin")
 				.with(user(admin))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
@@ -107,9 +104,9 @@ public class AdminControllerTest {
 
 	@Test
 	public void testUpdateUnauthorized() throws Exception {
-		ProductCreateUpdateRequest request = createProductRequest();
+		ProductCreateRequest request = createProductCreateRequest();
 
-		mvc.perform(put("/api/admin")
+		mvc.perform(patch("/api/admin")
 				.with(user(user))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
@@ -127,7 +124,7 @@ public class AdminControllerTest {
 
 	@Test
 	public void testDelete() throws Exception {
-		DeleteProductRequest request = new DeleteProductRequest();
+		ProductDeleteRequest request = new ProductDeleteRequest();
 		request.setProductId(5L);
 
 		mvc.perform(delete("/api/admin")
@@ -137,8 +134,17 @@ public class AdminControllerTest {
 				.andExpect(status().isOk());
 	}
 
-	private ProductCreateUpdateRequest createProductRequest() {
-		ProductCreateUpdateRequest request = new ProductCreateUpdateRequest();
+	private ProductCreateRequest createProductCreateRequest() {
+		ProductCreateRequest request = new ProductCreateRequest();
+		request.setName("Hot Chocolate");
+		request.setPrice(7.0D);
+		request.setType(ProductType.DRINK);
+		return request;
+	}
+
+	private ProductUpdateRequest createProductUpdateRequest() {
+		ProductUpdateRequest request = new ProductUpdateRequest();
+		request.setId(1L);
 		request.setName("Hot Chocolate");
 		request.setPrice(7.0D);
 		request.setType(ProductType.DRINK);

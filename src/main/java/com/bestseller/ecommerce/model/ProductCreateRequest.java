@@ -6,7 +6,7 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-public class ProductCreateUpdateRequest {
+public class ProductCreateRequest {
 
 	@NotBlank(message = "Product name cannot be empty.")
 	private String name;

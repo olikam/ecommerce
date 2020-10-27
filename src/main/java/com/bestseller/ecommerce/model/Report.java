@@ -32,4 +32,8 @@ public class Report {
 	public void setMostUsedToppings(Map<String, Integer> mostUsedToppings) {
 		this.mostUsedToppings = mostUsedToppings;
 	}
+
+	@Override public String toString() {
+		return "Report{" + "amountPerCustomer=" + amountPerCustomer + ", mostUsedToppings=" + mostUsedToppings + '}';
+	}
 }

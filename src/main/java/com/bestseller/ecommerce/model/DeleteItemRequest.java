@@ -28,4 +28,8 @@ public class DeleteItemRequest {
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
+
+	@Override public String toString() {
+		return "DeleteItemRequest{" + "cartItemId=" + cartItemId + ", quantity=" + quantity + '}';
+	}
 }

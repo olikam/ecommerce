@@ -1,4 +1,4 @@
-package com.bestseller.ecommerce;
+package com.bestseller.ecommerce.unit;
 
 import com.bestseller.ecommerce.entity.Order;
 import com.bestseller.ecommerce.entity.OrderProduct;

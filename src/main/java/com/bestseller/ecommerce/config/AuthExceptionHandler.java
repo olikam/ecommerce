@@ -1,6 +1,8 @@
 package com.bestseller.ecommerce.config;
 
-import org.slf4j.Logger;
+import com.bestseller.ecommerce.service.ProductServiceImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -14,7 +16,7 @@ import java.io.IOException;
 @Component
 public class AuthExceptionHandler implements AuthenticationEntryPoint {
 
-	private static final Logger logger = LoggerFactory.getLogger(AuthExceptionHandler.class);
+	private static final Logger logger = LogManager.getLogger(AuthenticationEntryPoint.class);
 
 	@Override
 	public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e)

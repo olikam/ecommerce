@@ -168,7 +168,8 @@ public class User implements UserDetails {
 		this.userRole = userRole;
 	}
 
-	@Override public boolean equals(Object o) {
+	@Override
+	public boolean equals(Object o) {
 		if (this == o)
 			return true;
 		if (o == null || getClass() != o.getClass())
@@ -177,7 +178,13 @@ public class User implements UserDetails {
 		return Objects.equals(phoneNumber, user.phoneNumber) && Objects.equals(username, user.username);
 	}
 
-	@Override public int hashCode() {
+	@Override
+	public int hashCode() {
 		return Objects.hash(phoneNumber, username);
+	}
+
+	@Override
+	public String toString() {
+		return "User{" + "id=" + id + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", phoneNumber='" + phoneNumber + '\'' + ", username='" + username + '\'' + ", userRole=" + userRole + ", address='" + address + '\'' + ", password='" + password + '\'' + ", enabled=" + enabled + '}';
 	}
 }

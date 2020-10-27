@@ -5,6 +5,8 @@ import com.bestseller.ecommerce.entity.OrderProduct;
 import com.bestseller.ecommerce.model.Amount;
 import com.bestseller.ecommerce.model.Report;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class ReportServiceImpl implements ReportService {
+
+	private static final Logger logger = LogManager.getLogger(ReportServiceImpl.class);
 
 	@Autowired
 	private OrderService orderService;
@@ -37,7 +41,9 @@ public class ReportServiceImpl implements ReportService {
 				Arrays.stream(orderProduct.getToppingsNames().split(",")).filter(StringUtils::isNotBlank).forEach(topping -> mostUsedToppings.put(topping, mostUsedToppings.getOrDefault(topping, 0) + orderProduct.getQuantity()));
 			}
 		}
-		return new Report(sortByDesc(amountPerCustomer), sortByDesc(mostUsedToppings));
+		Report report = new Report(sortByDesc(amountPerCustomer), sortByDesc(mostUsedToppings));
+		logger.info("Report generated successfully: " + report);
+		return report;
 	}
 
 	private <K, V extends Comparable<V>> Map<K, V> sortByDesc(Map<K, V> map) {

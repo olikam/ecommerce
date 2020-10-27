@@ -40,4 +40,8 @@ public class AddItemRequest {
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
+
+	@Override public String toString() {
+		return "AddItemRequest{" + "drinkId=" + drinkId + ", toppingIds=" + toppingIds + ", quantity=" + quantity + '}';
+	}
 }

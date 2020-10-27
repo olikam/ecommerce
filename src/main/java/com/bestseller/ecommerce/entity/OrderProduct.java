@@ -69,4 +69,9 @@ public class OrderProduct {
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
+
+	@Override
+	public String toString() {
+		return "OrderProduct{" + "drinkName='" + drinkName + '\'' + ", toppingsNames='" + toppingsNames + '\'' + ", price=" + price + ", quantity=" + quantity + '}';
+	}
 }

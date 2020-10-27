@@ -9,6 +9,8 @@ import com.bestseller.ecommerce.model.AddItemRequest;
 import com.bestseller.ecommerce.model.DeleteItemRequest;
 import com.bestseller.ecommerce.repository.CartItemRepository;
 import com.bestseller.ecommerce.repository.CartRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,8 @@ import java.util.List;
 @Service
 @Transactional
 public class CartServiceImpl implements CartService {
+
+	private static final Logger logger = LogManager.getLogger(CartServiceImpl.class);
 
 	@Autowired
 	private CartRepository cartRepository;
@@ -59,12 +63,12 @@ public class CartServiceImpl implements CartService {
 		Cart cart = getCart(user);
 		CartItem newCartItem = createCartItem(addItemRequest);
 		newCartItem.setCart(cart);
-		cart.getCartItems().stream()
-				.filter(newCartItem::equals)
-				.findAny()
-				.ifPresentOrElse(cartItem -> cartItem.increaseQuantityBy(addItemRequest.getQuantity()),
-						() -> cart.addCartItem(newCartItem));
+		if (!cart.getCartItems().contains(newCartItem)) {
+			cartItemRepository.save(newCartItem);
+		}
+		cart.addCartItem(newCartItem);
 		cartRepository.save(cart);
+		logger.info("CartItem added successfully - User: " + user.getId() + " - Added item: " + addItemRequest);
 		return getCart(user);
 	}
 
@@ -77,7 +81,7 @@ public class CartServiceImpl implements CartService {
 	private CartItem createCartItem(AddItemRequest addItemRequest) {
 		CartItem newCartItem = new CartItem();
 		newCartItem.setProducts(getProductsByIds(addItemRequest), addItemRequest.getQuantity());
-		return cartItemRepository.save(newCartItem);
+		return newCartItem;
 	}
 
 	private List<Product> getProductsByIds(AddItemRequest addItemRequest) {
@@ -113,6 +117,7 @@ public class CartServiceImpl implements CartService {
 							cart.removeCartItem(cartItem, deleteItemRequest.getQuantity());
 							cartRepository.save(cart);
 						}));
+		logger.info("CartItem deleted successfully - User: " + user.getId() + " - Deleted item: " + deleteItemRequest);
 		return getCart(user);
 	}
 
@@ -124,6 +129,11 @@ public class CartServiceImpl implements CartService {
 	 */
 	@Override
 	public void empty(User user) {
-		cartRepository.findByUserId(user.getId()).ifPresent(cartRepository::delete);
+		cartRepository.findByUserId(user.getId()).ifPresent(cart -> {
+			cart.getCartItems().forEach(cartItem -> cartItem.setCart(null));
+			cartItemRepository.deleteAll(cart.getCartItems());
+			cartRepository.delete(cart);
+			logger.info("Cart is emptied successfully - User: " + user.getId());
+		});
 	}
 }
