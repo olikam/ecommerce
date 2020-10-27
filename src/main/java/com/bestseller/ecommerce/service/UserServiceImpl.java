@@ -20,6 +20,12 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserRepository userRepository;
 
+	/**
+	 * Registers the specified user.
+	 *
+	 * @param user
+	 * 			  {@link User} to be registered.
+	 */
 	@Override
 	public void register(User user) {
 		userRepository.findByUsername(user.getUsername()).ifPresent(u -> {
@@ -31,11 +37,22 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(user);
 	}
 
+	/**
+	 *
+	 * @return Returns all users.
+	 */
 	@Override
 	public List<User> getAllUsers() {
 		return StreamSupport.stream(userRepository.findAll().spliterator(), false).collect(Collectors.toList());
 	}
 
+	/**
+	 *
+	 * @param username
+	 *            E-mail address of the user.
+	 * @return Returns {@link UserDetails}
+	 * @throws UsernameNotFoundException throws {@link UsernameNotFoundException}
+	 */
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(String.format("User %s cannot be found.", username)));

@@ -37,6 +37,13 @@ public class OrderServiceImpl implements OrderService {
 		return StreamSupport.stream(orderRepository.findAll().spliterator(), false).collect(Collectors.toList());
 	}
 
+	/**
+	 * Places order using the cart for the specified user.
+	 *
+	 * @param user
+	 * 			  {@link User} object which will place order.
+	 * @return Returns {@link Order} details.
+	 */
 	@Override
 	public Order create(User user) {
 		Order order = orderRepository.save(createOrderFromCart(user));

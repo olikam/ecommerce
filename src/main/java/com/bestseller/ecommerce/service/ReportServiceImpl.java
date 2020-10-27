@@ -19,6 +19,11 @@ public class ReportServiceImpl implements ReportService {
 	@Autowired
 	private OrderService orderService;
 
+	/**
+	 * Generates report.
+	 *
+	 * @return Returns {@link Report}
+	 */
 	@Override
 	public Report generateReport() {
 		Map<String, Amount> amountPerCustomer = new HashMap<>();

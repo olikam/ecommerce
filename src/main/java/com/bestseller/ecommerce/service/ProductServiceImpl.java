@@ -30,6 +30,12 @@ public class ProductServiceImpl implements ProductService {
 		return productRepository.findById(id);
 	}
 
+	/**
+	 * Creates a new product.
+	 *
+	 * @param product
+	 *            {@link Product} details to be added.
+	 */
 	@Override
 	public void create(Product product){
 		productRepository.findByNameIgnoreCase(product.getName()).ifPresent(p -> {
@@ -38,6 +44,12 @@ public class ProductServiceImpl implements ProductService {
 		productRepository.save(product);
 	}
 
+	/**
+	 * Updated the specified product.
+	 *
+	 * @param product
+	 * 			  {@link Product} details to be updated.
+	 */
 	@Override
 	public void update(Product product) {
 		Long id = productRepository.findByNameIgnoreCase(product.getName()).map(Product::getId).orElseThrow(() -> new ProductNotFoundException(product.getId()));
@@ -45,6 +57,12 @@ public class ProductServiceImpl implements ProductService {
 		productRepository.save(product);
 	}
 
+	/**
+	 * Deletes the product.
+	 *
+	 * @param productId
+	 *            Product id which will be deleted.
+	 */
 	@Override
 	public void delete(Long productId) {
 		productRepository.findById(productId).ifPresent(productRepository::delete);

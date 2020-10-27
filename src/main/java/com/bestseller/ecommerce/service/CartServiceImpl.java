@@ -32,6 +32,12 @@ public class CartServiceImpl implements CartService {
 	@Autowired
 	private DiscountService discountService;
 
+	/**
+	 *
+	 * @param user
+	 *            {@link User} object having the cart.
+	 * @return Returns cart of the specified customer.
+	 */
 	@Override
 	public Cart getCart(User user) {
 		Cart cart = cartRepository.findByUserId(user.getId()).orElseGet(() -> createNewCart(user));
@@ -39,6 +45,15 @@ public class CartServiceImpl implements CartService {
 		return cart;
 	}
 
+	/**
+	 * Adds the specified item to the cart.
+	 *
+	 * @param user
+	 *            {@link User} object to add item.
+	 * @param addItemRequest
+	 *            {@link AddItemRequest} object to be added to the cart.
+	 * @return Returns up-to-date cart of the user.
+	 */
 	@Override
 	public Cart add(User user, AddItemRequest addItemRequest) {
 		Cart cart = getCart(user);
@@ -79,6 +94,15 @@ public class CartServiceImpl implements CartService {
 		return products;
 	}
 
+	/**
+	 * Deletes the specified item from the cart.
+	 *
+	 * @param user
+	 *            {@link User} object to delete item.
+	 * @param deleteItemRequest
+	 *            {@link DeleteItemRequest} object to be deleted from the cart.
+	 * @return Returns up-to-date cart of the user.
+	 */
 	@Override
 	public Cart delete(User user, DeleteItemRequest deleteItemRequest) {
 		cartRepository.findByUserId(user.getId())
@@ -92,6 +116,12 @@ public class CartServiceImpl implements CartService {
 		return getCart(user);
 	}
 
+	/**
+	 * Empties the cart of the user.
+	 *
+	 * @param user
+	 *            {@link User} object to empty the cart.
+	 */
 	@Override
 	public void empty(User user) {
 		cartRepository.findByUserId(user.getId()).ifPresent(cartRepository::delete);

@@ -13,6 +13,12 @@ import java.util.Comparator;
 @Transactional
 public class DiscountServiceImpl implements DiscountService {
 
+	/**
+	 * Applies the discount rule to the cart.
+	 *
+	 * @param cart
+	 *            {@link Cart} object which will be applied discount rules on it.
+	 */
 	@Override
 	public void apply(Cart cart) {
 		BigDecimal discountedAmount = Arrays.stream(DiscountRules.values())
