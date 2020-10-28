@@ -63,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
 		Cart cart = cartService.getCart(user);
 		List<OrderProduct> orderProducts = cart.getCartItems()
 				.stream()
-				.map(this::convertCartItemToOrder)
+				.map(this::convertCartItemToOrderProduct)
 				.collect(Collectors.toList());
 		order.setOrderProducts(orderProducts);
 		order.setTotalAmount(cart.getTotalAmount());
@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
 		return order;
 	}
 
-	private OrderProduct convertCartItemToOrder(CartItem cartItem) {
+	private OrderProduct convertCartItemToOrderProduct(CartItem cartItem) {
 		OrderProduct orderProduct = new OrderProduct();
 		orderProduct.setPrice(cartItem.getAmount());
 		orderProduct.setQuantity(cartItem.getQuantity());
