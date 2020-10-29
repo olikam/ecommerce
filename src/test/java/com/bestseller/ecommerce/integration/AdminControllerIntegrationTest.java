@@ -54,7 +54,7 @@ public class AdminControllerIntegrationTest {
 	public void testCreate() throws Exception {
 		ProductCreateRequest request = createProductCreateRequest();
 
-		mvc.perform(post("/api/admin")
+		mvc.perform(post("/api/admin/product")
 				.with(user(admin))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
@@ -68,7 +68,7 @@ public class AdminControllerIntegrationTest {
 	public void testCreateNonAuthorized() throws Exception {
 		ProductCreateRequest request = createProductCreateRequest();
 
-		mvc.perform(post("/api/admin")
+		mvc.perform(post("/api/admin/product")
 				.with(user(user))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
@@ -79,7 +79,7 @@ public class AdminControllerIntegrationTest {
 	public void testUpdate() throws Exception {
 		ProductUpdateRequest request = createProductUpdateRequest();
 
-		mvc.perform(patch("/api/admin")
+		mvc.perform(patch("/api/admin/product")
 				.with(user(admin))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
@@ -96,18 +96,18 @@ public class AdminControllerIntegrationTest {
 		ProductUpdateRequest request = createProductUpdateRequest();
 		request.setName("Milk");
 
-		mvc.perform(patch("/api/admin")
+		mvc.perform(patch("/api/admin/product")
 				.with(user(admin))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void testDelete() throws Exception {
 		ProductDeleteRequest request = createProductDeleteRequest();
 
-		mvc.perform(delete("/api/admin")
+		mvc.perform(delete("/api/admin/product")
 				.with(user(admin))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))

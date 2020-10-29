@@ -73,7 +73,7 @@ public class AdminControllerTest {
 	public void testCreate() throws Exception {
 		ProductCreateRequest request = createProductCreateRequest();
 
-		mvc.perform(post("/api/admin")
+		mvc.perform(post("/api/admin/product")
 				.with(user(admin))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
@@ -84,7 +84,7 @@ public class AdminControllerTest {
 	public void testCreateUnauthorized() throws Exception {
 		ProductCreateRequest request = createProductCreateRequest();
 
-		mvc.perform(post("/api/admin")
+		mvc.perform(post("/api/admin/product")
 				.with(user(user))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
@@ -95,7 +95,7 @@ public class AdminControllerTest {
 	public void testUpdate() throws Exception {
 		ProductUpdateRequest request = createProductUpdateRequest();
 
-		mvc.perform(patch("/api/admin")
+		mvc.perform(patch("/api/admin/product")
 				.with(user(admin))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
@@ -106,7 +106,7 @@ public class AdminControllerTest {
 	public void testUpdateUnauthorized() throws Exception {
 		ProductCreateRequest request = createProductCreateRequest();
 
-		mvc.perform(patch("/api/admin")
+		mvc.perform(patch("/api/admin/product")
 				.with(user(user))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))
@@ -115,7 +115,7 @@ public class AdminControllerTest {
 
 	@Test
 	public void testDeleteUnauthorized() throws Exception {
-		mvc.perform(delete("/api/admin")
+		mvc.perform(delete("/api/admin/product")
 				.with(user(user))
 				.contentType(MediaType.APPLICATION_JSON)
 				.param("productId", "5"))
@@ -127,7 +127,7 @@ public class AdminControllerTest {
 		ProductDeleteRequest request = new ProductDeleteRequest();
 		request.setProductId(5L);
 
-		mvc.perform(delete("/api/admin")
+		mvc.perform(delete("/api/admin/product")
 				.with(user(admin))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(request)))

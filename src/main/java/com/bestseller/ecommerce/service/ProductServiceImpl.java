@@ -49,9 +49,7 @@ public class ProductServiceImpl implements ProductService {
 	 */
 	@Override
 	public void create(Product product){
-		productRepository.findByNameIgnoreCase(product.getName()).ifPresent(p -> {
-			throw new DuplicateProductException(p.getName());
-		});
+		validateUniqueProductName(product.getName());
 		productRepository.save(product);
 		logger.info("Product with the following id created successfully: " + product.getId());
 	}
@@ -64,12 +62,19 @@ public class ProductServiceImpl implements ProductService {
 	 */
 	@Override
 	public void update(ProductUpdateRequest productUpdateRequest) {
+		validateUniqueProductName(productUpdateRequest.getName());
 		Product product = productRepository.findById(productUpdateRequest.getId()).orElseThrow(() -> new ProductNotFoundException(productUpdateRequest.getId()));
 		product.setName(productUpdateRequest.getName());
 		product.setPrice(BigDecimal.valueOf(productUpdateRequest.getPrice()).setScale(2, RoundingMode.HALF_UP));
 		product.setType(productUpdateRequest.getType());
 		productRepository.save(product);
 		logger.info("Product with the following id updated successfully: " + product.getId());
+	}
+
+	private void validateUniqueProductName(String name) {
+		productRepository.findByNameIgnoreCase(name).ifPresent(p -> {
+			throw new DuplicateProductException(p.getName());
+		});
 	}
 
 	/**
