@@ -36,7 +36,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 				.exceptionHandling().authenticationEntryPoint(authExceptionHandler).and()
 				.authorizeRequests()
 				.antMatchers("/api/admin/**").hasAuthority(UserRole.ADMIN.name())
-				.antMatchers("/api/cart/**", "/api/products/**").hasAnyAuthority(UserRole.ADMIN.name(), UserRole.USER.name()).and()
+				.antMatchers("/api/cart/**", "/api/products/**", "/api/order/**").hasAnyAuthority(UserRole.ADMIN.name(), UserRole.USER.name()).and()
 				.authorizeRequests().anyRequest().permitAll().and()
 				.addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
