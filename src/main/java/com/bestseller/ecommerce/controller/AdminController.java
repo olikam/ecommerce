@@ -31,7 +31,7 @@ public class AdminController {
 		return new ResponseEntity<>(reportService.generateReport(), HttpStatus.OK);
 	}
 
-	@PostMapping
+	@PostMapping("/product")
 	public ResponseEntity<String> create(@Valid @RequestBody ProductCreateRequest productCreateRequest) {
 		Product newProduct = new Product(productCreateRequest.getName(),
 				BigDecimal.valueOf(productCreateRequest.getPrice()).setScale(2, RoundingMode.HALF_UP),
@@ -40,13 +40,13 @@ public class AdminController {
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
-	@PatchMapping
+	@PatchMapping("/product")
 	public ResponseEntity<String> update(@Valid @RequestBody ProductUpdateRequest productUpdateRequest) {
 		productService.update(productUpdateRequest);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@DeleteMapping
+	@DeleteMapping("/product")
 	public ResponseEntity<String> delete(@Valid @RequestBody ProductDeleteRequest productDeleteRequest) {
 		productService.delete(productDeleteRequest.getProductId());
 		return new ResponseEntity<>(HttpStatus.OK);

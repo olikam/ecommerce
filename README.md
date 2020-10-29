@@ -27,9 +27,9 @@ Objective: We need a backend for our online coffee place startup, starbux coffee
 ```
 ##### Admin
 ```
-[POST] /api/admin
-[PATCH] /api/admin
-[DELETE] /api/admin
+[POST] /api/admin/product
+[PATCH] /api/admin/product
+[DELETE] /api/admin/product
 [GET] /api/admin/report
 ```
 #### Request Sample
