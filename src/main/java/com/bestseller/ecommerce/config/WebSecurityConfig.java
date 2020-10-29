@@ -36,9 +36,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 				.exceptionHandling().authenticationEntryPoint(authExceptionHandler).and()
 				.authorizeRequests()
 				.antMatchers("/api/admin/**").hasAuthority(UserRole.ADMIN.name())
-				.antMatchers("/api/cart/**").hasAnyAuthority(UserRole.ADMIN.name(), UserRole.USER.name())
-				.anyRequest().authenticated().and()
-				.addFilterAfter(requestFilter, UsernamePasswordAuthenticationFilter.class);
+				.antMatchers("/api/cart/**", "/api/products/**").hasAnyAuthority(UserRole.ADMIN.name(), UserRole.USER.name()).and()
+				.authorizeRequests().anyRequest().permitAll().and()
+				.addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 
 	@Override
@@ -49,6 +49,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 				"/swagger-resources/**",
 				"/configuration/security",
 				"/swagger-ui.html",
+				"/swagger-ui/**",
 				"/sw.js",
 				"/webjars/**");
 	}

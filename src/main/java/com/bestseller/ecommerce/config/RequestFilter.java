@@ -1,10 +1,9 @@
 package com.bestseller.ecommerce.config;
 
-import com.bestseller.ecommerce.entity.User;
-import com.bestseller.ecommerce.service.UserServiceImpl;
-import com.bestseller.ecommerce.util.JwtUtil;
 import com.bestseller.ecommerce.service.UserService;
+import com.bestseller.ecommerce.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ public class RequestFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
 		final String authHeader = request.getHeader("Authorization");
 		String username = null;
-		if (authHeader != null) {
+		if (StringUtils.isNotBlank(authHeader)) {
 			try {
 				username = JwtUtil.extractUsername(authHeader);
 			} catch (ExpiredJwtException e) {
