@@ -87,8 +87,8 @@ Line: %83
 ##### Admin
 ```
 [POST] /api/admin/product
-[PUT] /api/admin/product/id
-[DELETE] /api/admin/product/id
+[PUT] /api/admin/product/{id}
+[DELETE] /api/admin/product/{id}
 [GET] /api/admin/report
 ```
 #### Request Sample
