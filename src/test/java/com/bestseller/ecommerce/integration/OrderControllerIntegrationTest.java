@@ -1,5 +1,11 @@
 package com.bestseller.ecommerce.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.bestseller.ecommerce.DemoApplication;
 import com.bestseller.ecommerce.entity.Order;
 import com.bestseller.ecommerce.entity.User;
@@ -10,6 +16,7 @@ import com.bestseller.ecommerce.repository.ProductRepository;
 import com.bestseller.ecommerce.repository.UserRepository;
 import com.bestseller.ecommerce.service.CartService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,66 +26,59 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = DemoApplication.class)
 @AutoConfigureMockMvc
 public class OrderControllerIntegrationTest {
-	@Autowired
-	private MockMvc mvc;
 
-	@Autowired
-	private CartRepository cartRepository;
+    @Autowired
+    private MockMvc mvc;
 
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private CartRepository cartRepository;
 
-	@Autowired
-	private OrderRepository orderRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	@Autowired
-	private ProductRepository productRepository;
+    @Autowired
+    private OrderRepository orderRepository;
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @Autowired
+    private ProductRepository productRepository;
 
-	@Autowired
-	private CartService cartService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-	private User user;
+    @Autowired
+    private CartService cartService;
 
-	@BeforeEach
-	public void setUp() {
-		user = userRepository.findByUsername("esoner.sezgin@gmail.com").orElseThrow(AssertionError::new);
-	}
+    private User user;
 
-	@Test
-	public void testPlaceOrderAndGet() throws Exception {
-		AddItemRequest addItemRequest = new AddItemRequest();
-		addItemRequest.setQuantity(5);
-		addItemRequest.setToppingIds(List.of(5L, 6L));
-		addItemRequest.setDrinkId(1L);
-		cartService.add(user, addItemRequest);
+    @BeforeEach
+    public void setUp() {
+        user = userRepository.findByUsername("esoner.sezgin@gmail.com").orElseThrow(AssertionError::new);
+    }
 
-		mvc.perform(post("/api/order")
-				.with(user(user))
-				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
+    @Test
+    public void testPlaceOrderAndGet() throws Exception {
+        AddItemRequest addItemRequest = new AddItemRequest();
+        addItemRequest.setQuantity(5);
+        addItemRequest.setToppingIds(List.of(5L, 6L));
+        addItemRequest.setDrinkId(1L);
+        cartService.add(user, addItemRequest);
 
-		MvcResult mvcResult = mvc.perform(get("/api/order")
-				.with(user(user))
-				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andReturn();
+        mvc.perform(post("/api/order")
+                .with(user(user))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-		@SuppressWarnings("unchecked")
-		List<Order> result = (List<Order>) objectMapper.readValue(mvcResult.getResponse().getContentAsString(), List.class);
-		assertThat(result).hasSize(1);
-	}
+        MvcResult mvcResult = mvc.perform(get("/api/order")
+                .with(user(user))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        @SuppressWarnings("unchecked")
+        List<Order> result = (List<Order>) objectMapper.readValue(mvcResult.getResponse().getContentAsString(), List.class);
+        assertThat(result).hasSize(1);
+    }
 }

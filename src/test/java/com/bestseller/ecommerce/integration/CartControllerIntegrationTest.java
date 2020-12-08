@@ -1,5 +1,12 @@
 package com.bestseller.ecommerce.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.bestseller.ecommerce.DemoApplication;
 import com.bestseller.ecommerce.entity.Cart;
 import com.bestseller.ecommerce.entity.CartItem;
@@ -11,6 +18,8 @@ import com.bestseller.ecommerce.model.ProductType;
 import com.bestseller.ecommerce.repository.CartRepository;
 import com.bestseller.ecommerce.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,131 +29,123 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = DemoApplication.class)
 @AutoConfigureMockMvc
 public class CartControllerIntegrationTest {
 
-	@Autowired
-	private MockMvc mvc;
+    @Autowired
+    private MockMvc mvc;
 
-	@Autowired
-	private CartRepository cartRepository;
+    @Autowired
+    private CartRepository cartRepository;
 
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-	private User user1;
+    private User user1;
 
-	private User user2;
+    private User user2;
 
-	@BeforeEach
-	public void setUp() {
-		user1 = userRepository.findByUsername("esoner.sezgin@gmail.com").orElseThrow(AssertionError::new);
-		user2 = userRepository.findByUsername("paul.muaddib@arrakis.com").orElseThrow(AssertionError::new);
-	}
+    @BeforeEach
+    public void setUp() {
+        user1 = userRepository.findByUsername("esoner.sezgin@gmail.com").orElseThrow(AssertionError::new);
+        user2 = userRepository.findByUsername("paul.muaddib@arrakis.com").orElseThrow(AssertionError::new);
+    }
 
-	@Test
-	public void testGetCart() throws Exception {
-		mvc.perform(get("/api/cart")
-				.with(user(user1))
-				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-	}
+    @Test
+    public void testGetCart() throws Exception {
+        mvc.perform(get("/api/cart")
+                .with(user(user1))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 
-	@Test
-	public void testAddItem() throws Exception {
-		int quantity = 2;
-		Long drinkId = 1L;
-		List<Long> toppingIds = List.of(5L, 6L);
-		addItem(user1, quantity, drinkId, toppingIds);
-		Optional<Cart> result = cartRepository.findByUserId(user1.getId());
-		assertThat(result).isNotEmpty();
-		assertThat(result.get().getCartItems().size()).isEqualTo(1);
+    @Test
+    public void testAddItem() throws Exception {
+        int quantity = 2;
+        Long drinkId = 1L;
+        List<Long> toppingIds = List.of(5L, 6L);
+        addItem(user1, quantity, drinkId, toppingIds);
+        Optional<Cart> result = cartRepository.findByUserId(user1.getId());
+        assertThat(result).isNotEmpty();
+        assertThat(result.get().getCartItems().size()).isEqualTo(1);
 
-		CartItem cartItem = result.get().getCartItems().iterator().next();
-		assertThat(cartItem.getQuantity()).isEqualTo(quantity);
-		assertThat(cartItem.getProducts().size()).isEqualTo(3);
+        CartItem cartItem = result.get().getCartItems().iterator().next();
+        assertThat(cartItem.getQuantity()).isEqualTo(quantity);
+        assertThat(cartItem.getProducts().size()).isEqualTo(3);
 
-		Optional<Product> optionalDrink = cartItem.getProducts().stream().filter(p -> p.getType() == ProductType.DRINK).findAny();
-		assertThat(optionalDrink).isNotEmpty();
-		assertThat(optionalDrink.get().getId()).isEqualTo(1);
+        Optional<Product> optionalDrink = cartItem.getProducts().stream().filter(p -> p.getType() == ProductType.DRINK).findAny();
+        assertThat(optionalDrink).isNotEmpty();
+        assertThat(optionalDrink.get().getId()).isEqualTo(1);
 
-		cartItem.getProducts().stream().filter(p -> p.getType() == ProductType.TOPPING).forEach(topping -> {
-			if (!toppingIds.contains(topping.getId())) {
-				throw new AssertionError();
-			}
-		});
-	}
+        cartItem.getProducts().stream().filter(p -> p.getType() == ProductType.TOPPING).forEach(topping -> {
+            if (!toppingIds.contains(topping.getId())) {
+                throw new AssertionError();
+            }
+        });
+    }
 
-	@Test
-	public void testDeleteItem() throws Exception {
-		int quantity = 2;
-		Long drinkId = 3L;
-		List<Long> toppingIds = List.of(6L, 7L);
-		Cart cart = addItem(user2, quantity, drinkId, toppingIds);
-		DeleteItemRequest deleteItemRequest = new DeleteItemRequest();
-		deleteItemRequest.setCartItemId(cart.getCartItems().iterator().next().getId());
-		int deletedQuantity = 1;
-		deleteItemRequest.setQuantity(deletedQuantity);
+    @Test
+    public void testDeleteItem() throws Exception {
+        int quantity = 2;
+        Long drinkId = 3L;
+        List<Long> toppingIds = List.of(6L, 7L);
+        Cart cart = addItem(user2, quantity, drinkId, toppingIds);
+        DeleteItemRequest deleteItemRequest = new DeleteItemRequest();
+        deleteItemRequest.setCartItemId(cart.getCartItems().iterator().next().getId());
+        int deletedQuantity = 1;
+        deleteItemRequest.setQuantity(deletedQuantity);
 
-		mvc.perform(delete("/api/cart")
-				.with(user(user2))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(deleteItemRequest)))
-				.andExpect(status().isOk());
+        mvc.perform(delete("/api/cart")
+                .with(user(user2))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(deleteItemRequest)))
+                .andExpect(status().isOk());
 
-		Optional<Cart> result = cartRepository.findByUserId(user2.getId());
-		assertThat(result).isNotEmpty();
-		assertThat(cart.getCartItems().iterator().next().getQuantity() - deletedQuantity).isEqualTo(result.get().getCartItems().size());
-	}
+        Optional<Cart> result = cartRepository.findByUserId(user2.getId());
+        assertThat(result).isNotEmpty();
+        assertThat(cart.getCartItems().iterator().next().getQuantity() - deletedQuantity).isEqualTo(result.get().getCartItems().size());
+    }
 
-	@Test
-	public void testEmpty() throws Exception {
-		int quantity = 2;
-		Long drinkId = 3L;
-		List<Long> toppingIds = List.of(6L, 7L);
-		addItem(user2, quantity, drinkId, toppingIds);
-		mvc.perform(delete("/api/cart/all")
-				.with(user(user2))
-				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
+    @Test
+    public void testEmpty() throws Exception {
+        int quantity = 2;
+        Long drinkId = 3L;
+        List<Long> toppingIds = List.of(6L, 7L);
+        addItem(user2, quantity, drinkId, toppingIds);
+        mvc.perform(delete("/api/cart/all")
+                .with(user(user2))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-		Optional<Cart> result = cartRepository.findByUserId(user2.getId());
-		assertThat(result).isEmpty();
-	}
+        Optional<Cart> result = cartRepository.findByUserId(user2.getId());
+        assertThat(result).isEmpty();
+    }
 
-	private Cart addItem(User user, int quantity, Long drinkId, List<Long> toppingIds) throws Exception {
-		AddItemRequest addItemRequest = new AddItemRequest();
-		addItemRequest.setDrinkId(drinkId);
-		addItemRequest.setToppingIds(toppingIds);
-		addItemRequest.setQuantity(quantity);
-		MvcResult mvcResult = mvc.perform(post("/api/cart")
-				.with(user(user))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(addItemRequest)))
-				.andExpect(status().isOk())
-				.andReturn();
-		String contentAsString = mvcResult.getResponse().getContentAsString();
-		return objectMapper.readValue(contentAsString, Cart.class);
-	}
+    private Cart addItem(User user, int quantity, Long drinkId, List<Long> toppingIds) throws Exception {
+        AddItemRequest addItemRequest = new AddItemRequest();
+        addItemRequest.setDrinkId(drinkId);
+        addItemRequest.setToppingIds(toppingIds);
+        addItemRequest.setQuantity(quantity);
+        MvcResult mvcResult = mvc.perform(post("/api/cart")
+                .with(user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(addItemRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        return objectMapper.readValue(contentAsString, Cart.class);
+    }
 
-	private String asJsonString(Object obj) {
-		try {
-			return new ObjectMapper().writeValueAsString(obj);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    private String asJsonString(Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

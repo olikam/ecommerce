@@ -4,5 +4,5 @@ import com.bestseller.ecommerce.model.Report;
 
 public interface ReportService {
 
-	Report generateReport();
+    Report generateReport();
 }

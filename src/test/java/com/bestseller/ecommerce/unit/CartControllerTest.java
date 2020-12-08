@@ -1,5 +1,10 @@
 package com.bestseller.ecommerce.unit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.bestseller.ecommerce.config.AuthExceptionHandler;
 import com.bestseller.ecommerce.controller.CartController;
 import com.bestseller.ecommerce.entity.Cart;
@@ -25,63 +30,47 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(CartController.class)
 @WithMockUser
 @ActiveProfiles("test")
 public class CartControllerTest {
 
-	@Autowired
-	private MockMvc mvc;
+    private static final User user = new User();
+    private static final Cart cart = new Cart();
+    @Autowired
+    private MockMvc mvc;
+    @MockBean
+    private ProductService productService;
+    @MockBean
+    private CartService cartService;
+    @MockBean
+    private UserService userService;
+    @MockBean
+    private UserRepository userRepository;
+    @MockBean
+    private AuthExceptionHandler authExceptionHandler;
+    @MockBean
+    private CartRepository cartRepository;
+    @MockBean
+    private CartItemRepository cartItemRepository;
+    @MockBean
+    private DiscountService discountService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-	@MockBean
-	private ProductService productService;
+    @Test
+    public void testGetCart() throws Exception {
+        Mockito.when(cartService.getCart(user)).thenReturn(cart);
+        MvcResult mvcResult = mvc
+                .perform(get("/api/cart")
+                        .with(user(user)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        Cart actual = objectMapper.readValue(contentAsString, Cart.class);
+        assertThat(actual.getCartItems()).containsExactlyInAnyOrderElementsOf(cart.getCartItems());
 
-	@MockBean
-	private CartService cartService;
-
-	@MockBean
-	private UserService userService;
-
-	@MockBean
-	private UserRepository userRepository;
-
-	@MockBean
-	private AuthExceptionHandler authExceptionHandler;
-
-	@MockBean
-	private CartRepository cartRepository;
-
-	@MockBean
-	private CartItemRepository cartItemRepository;
-
-	@MockBean
-	private DiscountService discountService;
-
-	@Autowired
-	private ObjectMapper objectMapper;
-
-	private static final User user = new User();
-
-	private static final Cart cart = new Cart();
-
-	@Test
-	public void testGetCart() throws Exception {
-		Mockito.when(cartService.getCart(user)).thenReturn(cart);
-		MvcResult mvcResult = mvc
-				.perform(get("/api/cart")
-						.with(user(user)).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andReturn();
-		String contentAsString = mvcResult.getResponse().getContentAsString();
-		Cart actual = objectMapper.readValue(contentAsString, Cart.class);
-		assertThat(actual.getCartItems()).containsExactlyInAnyOrderElementsOf(cart.getCartItems());
-
-	}
+    }
 
 }

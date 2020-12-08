@@ -6,30 +6,31 @@ import javax.validation.constraints.PositiveOrZero;
 
 public class DeleteItemRequest {
 
-	@NotNull(message = "Cart item id cannot be empty.")
-	@PositiveOrZero(message = "Cart item id must be 0 at least.")
-	private Long cartItemId;
+    @NotNull(message = "Cart item id cannot be empty.")
+    @PositiveOrZero(message = "Cart item id must be 0 at least.")
+    private Long cartItemId;
 
-	@Min(value = 1, message = "Quantity must be 1 at least.")
-	private Integer quantity;
+    @Min(value = 1, message = "Quantity must be 1 at least.")
+    private Integer quantity;
 
-	public Long getCartItemId() {
-		return cartItemId;
-	}
+    public Long getCartItemId() {
+        return cartItemId;
+    }
 
-	public void setCartItemId(Long cartItemId) {
-		this.cartItemId = cartItemId;
-	}
+    public void setCartItemId(Long cartItemId) {
+        this.cartItemId = cartItemId;
+    }
 
-	public Integer getQuantity() {
-		return quantity;
-	}
+    public Integer getQuantity() {
+        return quantity;
+    }
 
-	public void setQuantity(Integer quantity) {
-		this.quantity = quantity;
-	}
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 
-	@Override public String toString() {
-		return "DeleteItemRequest{" + "cartItemId=" + cartItemId + ", quantity=" + quantity + '}';
-	}
+    @Override
+    public String toString() {
+        return "DeleteItemRequest{" + "cartItemId=" + cartItemId + ", quantity=" + quantity + '}';
+    }
 }

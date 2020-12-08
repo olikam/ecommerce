@@ -1,9 +1,19 @@
 package com.bestseller.ecommerce.unit;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.bestseller.ecommerce.config.AuthExceptionHandler;
 import com.bestseller.ecommerce.controller.AdminController;
 import com.bestseller.ecommerce.entity.User;
-import com.bestseller.ecommerce.model.*;
+import com.bestseller.ecommerce.model.ProductCreateRequest;
+import com.bestseller.ecommerce.model.ProductDeleteRequest;
+import com.bestseller.ecommerce.model.ProductType;
+import com.bestseller.ecommerce.model.ProductUpdateRequest;
+import com.bestseller.ecommerce.model.UserRole;
 import com.bestseller.ecommerce.service.ProductService;
 import com.bestseller.ecommerce.service.ReportService;
 import com.bestseller.ecommerce.service.UserService;
@@ -20,143 +30,132 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(AdminController.class)
 @WithMockUser
 @ActiveProfiles("test")
 public class AdminControllerTest {
 
-	@Autowired
-	private MockMvc mvc;
+    private static final User admin = new User();
+    private static final User user = new User();
+    @Autowired
+    private MockMvc mvc;
+    @MockBean
+    private ProductService productService;
+    @MockBean
+    private ReportService reportService;
+    @MockBean
+    private UserService userService;
+    @MockBean
+    private AuthExceptionHandler authExceptionHandler;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-	@MockBean
-	private ProductService productService;
+    @BeforeAll
+    public static void setUp() {
+        admin.setId(1L);
+        admin.setUsername("paul.muaddib@arrakis.com");
+        admin.setFirstName("paul");
+        admin.setLastName("muaddib");
+        admin.setPhoneNumber("00000000000");
+        admin.setUserRole(UserRole.ADMIN);
 
-	@MockBean
-	private ReportService reportService;
+        user.setId(2L);
+        user.setUsername("esoner.sezgin@gmail.com");
+        user.setFirstName("soner");
+        user.setLastName("sezgin");
+        user.setPhoneNumber("+905332108093");
+        user.setUserRole(UserRole.USER);
+    }
 
-	@MockBean
-	private UserService userService;
+    @Test
+    public void testCreate() throws Exception {
+        ProductCreateRequest request = createProductCreateRequest();
 
-	@MockBean
-	private AuthExceptionHandler authExceptionHandler;
+        mvc.perform(post("/api/admin/product")
+                .with(user(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(request)))
+                .andExpect(status().isCreated());
+    }
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @Test
+    public void testCreateUnauthorized() throws Exception {
+        ProductCreateRequest request = createProductCreateRequest();
 
-	private static final User admin = new User();
+        mvc.perform(post("/api/admin/product")
+                .with(user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(request)))
+                .andExpect(status().isForbidden());
+    }
 
-	private static final User user = new User();
+    @Test
+    public void testUpdate() throws Exception {
+        ProductUpdateRequest request = createProductUpdateRequest();
 
-	@BeforeAll
-	public static void setUp() {
-		admin.setId(1L);
-		admin.setUsername("paul.muaddib@arrakis.com");
-		admin.setFirstName("paul");
-		admin.setLastName("muaddib");
-		admin.setPhoneNumber("00000000000");
-		admin.setUserRole(UserRole.ADMIN);
+        mvc.perform(patch("/api/admin/product")
+                .with(user(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(request)))
+                .andExpect(status().isOk());
+    }
 
-		user.setId(2L);
-		user.setUsername("esoner.sezgin@gmail.com");
-		user.setFirstName("soner");
-		user.setLastName("sezgin");
-		user.setPhoneNumber("+905332108093");
-		user.setUserRole(UserRole.USER);
-	}
+    @Test
+    public void testUpdateUnauthorized() throws Exception {
+        ProductCreateRequest request = createProductCreateRequest();
 
-	@Test
-	public void testCreate() throws Exception {
-		ProductCreateRequest request = createProductCreateRequest();
+        mvc.perform(patch("/api/admin/product")
+                .with(user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(request)))
+                .andExpect(status().isForbidden());
+    }
 
-		mvc.perform(post("/api/admin/product")
-				.with(user(admin))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(request)))
-				.andExpect(status().isCreated());
-	}
+    @Test
+    public void testDeleteUnauthorized() throws Exception {
+        mvc.perform(delete("/api/admin/product")
+                .with(user(user))
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("productId", "5"))
+                .andExpect(status().isForbidden());
+    }
 
-	@Test
-	public void testCreateUnauthorized() throws Exception {
-		ProductCreateRequest request = createProductCreateRequest();
+    @Test
+    public void testDelete() throws Exception {
+        ProductDeleteRequest request = new ProductDeleteRequest();
+        request.setProductId(5L);
 
-		mvc.perform(post("/api/admin/product")
-				.with(user(user))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(request)))
-				.andExpect(status().isForbidden());
-	}
+        mvc.perform(delete("/api/admin/product")
+                .with(user(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(request)))
+                .andExpect(status().isOk());
+    }
 
-	@Test
-	public void testUpdate() throws Exception {
-		ProductUpdateRequest request = createProductUpdateRequest();
+    private ProductCreateRequest createProductCreateRequest() {
+        ProductCreateRequest request = new ProductCreateRequest();
+        request.setName("Hot Chocolate");
+        request.setPrice(7.0D);
+        request.setType(ProductType.DRINK);
+        return request;
+    }
 
-		mvc.perform(patch("/api/admin/product")
-				.with(user(admin))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(request)))
-				.andExpect(status().isOk());
-	}
+    private ProductUpdateRequest createProductUpdateRequest() {
+        ProductUpdateRequest request = new ProductUpdateRequest();
+        request.setId(1L);
+        request.setName("Hot Chocolate");
+        request.setPrice(7.0D);
+        request.setType(ProductType.DRINK);
+        return request;
+    }
 
-	@Test
-	public void testUpdateUnauthorized() throws Exception {
-		ProductCreateRequest request = createProductCreateRequest();
-
-		mvc.perform(patch("/api/admin/product")
-				.with(user(user))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(request)))
-				.andExpect(status().isForbidden());
-	}
-
-	@Test
-	public void testDeleteUnauthorized() throws Exception {
-		mvc.perform(delete("/api/admin/product")
-				.with(user(user))
-				.contentType(MediaType.APPLICATION_JSON)
-				.param("productId", "5"))
-				.andExpect(status().isForbidden());
-	}
-
-	@Test
-	public void testDelete() throws Exception {
-		ProductDeleteRequest request = new ProductDeleteRequest();
-		request.setProductId(5L);
-
-		mvc.perform(delete("/api/admin/product")
-				.with(user(admin))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(request)))
-				.andExpect(status().isOk());
-	}
-
-	private ProductCreateRequest createProductCreateRequest() {
-		ProductCreateRequest request = new ProductCreateRequest();
-		request.setName("Hot Chocolate");
-		request.setPrice(7.0D);
-		request.setType(ProductType.DRINK);
-		return request;
-	}
-
-	private ProductUpdateRequest createProductUpdateRequest() {
-		ProductUpdateRequest request = new ProductUpdateRequest();
-		request.setId(1L);
-		request.setName("Hot Chocolate");
-		request.setPrice(7.0D);
-		request.setType(ProductType.DRINK);
-		return request;
-	}
-
-	private String asJsonString(Object obj) {
-		try {
-			return new ObjectMapper().writeValueAsString(obj);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    private String asJsonString(Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

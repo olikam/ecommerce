@@ -1,108 +1,117 @@
 package com.bestseller.ecommerce.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.collections4.CollectionUtils;
-
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import org.apache.commons.collections4.CollectionUtils;
 
 @Entity
 public class CartItem {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	private List<Product> products = new ArrayList<>();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@JsonIgnore
-	@ManyToOne(fetch = FetchType.EAGER)
-	private Cart cart;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Product> products = new ArrayList<>();
 
-	private Integer quantity = 0;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Cart cart;
 
-	public CartItem() {
-	}
+    private Integer quantity = 0;
 
-	public Long getId() {
-		return id;
-	}
+    public CartItem() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setProducts(List<Product> products) {
-		this.products = products;
-		increaseQuantityBy(1);
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setProducts(List<Product> products, int quantity) {
-		this.products = products;
-		this.quantity = quantity;
-	}
+    public void setProducts(List<Product> products, int quantity) {
+        this.products = products;
+        this.quantity = quantity;
+    }
 
-	public Cart getCart() {
-		return cart;
-	}
+    public Cart getCart() {
+        return cart;
+    }
 
-	public void setCart(Cart cart) {
-		this.cart = cart;
-	}
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
 
-	public Integer getQuantity() {
-		return quantity;
-	}
+    public Integer getQuantity() {
+        return quantity;
+    }
 
-	public void increaseQuantityBy(int n) {
-		this.quantity += n;
-	}
+    public void increaseQuantityBy(int n) {
+        this.quantity += n;
+    }
 
-	public void decreaseQuantityBy(int n) {
-		this.quantity = Math.max(this.quantity - n, 0);
-		if(quantity == 0) {
-			products.clear();
-		}
-	}
+    public void decreaseQuantityBy(int n) {
+        this.quantity = Math.max(this.quantity - n, 0);
+        if (quantity == 0) {
+            products.clear();
+        }
+    }
 
-	@JsonIgnore
-	public BigDecimal getAmount() {
-		return products.stream()
-				.map(Product::getPrice)
-				.reduce(BigDecimal.ZERO, BigDecimal::add)
-				.multiply(new BigDecimal(quantity))
-				.setScale(2, RoundingMode.HALF_UP);
-	}
+    @JsonIgnore
+    public BigDecimal getAmount() {
+        return products.stream()
+                .map(Product::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .multiply(new BigDecimal(quantity))
+                .setScale(2, RoundingMode.HALF_UP);
+    }
 
-	public List<Product> getProducts() {
-		return products;
-	}
+    public List<Product> getProducts() {
+        return products;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		CartItem cartItem = (CartItem) o;
-		if(products == null && cartItem.getProducts() == null) {
-			return true;
-		} else if(products == null || cartItem.getProducts() == null) {
-			return false;
-		}
-		return CollectionUtils.isEqualCollection(products, cartItem.products);
-	}
+    public void setProducts(List<Product> products) {
+        this.products = products;
+        increaseQuantityBy(1);
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(products);
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        CartItem cartItem = (CartItem) o;
+        if (products == null && cartItem.getProducts() == null) {
+            return true;
+        } else if (products == null || cartItem.getProducts() == null) {
+            return false;
+        }
+        return CollectionUtils.isEqualCollection(products, cartItem.products);
+    }
 
-	@Override public String toString() {
-		return "CartItem{" + "id=" + id + ", products=" + products + ", cart=" + cart + ", quantity=" + quantity + '}';
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(products);
+    }
+
+    @Override
+    public String toString() {
+        return "CartItem{" + "id=" + id + ", products=" + products + ", cart=" + cart + ", quantity=" + quantity + '}';
+    }
 }

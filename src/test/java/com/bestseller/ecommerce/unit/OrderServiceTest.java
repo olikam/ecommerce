@@ -1,10 +1,24 @@
 package com.bestseller.ecommerce.unit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.bestseller.ecommerce.entity.Order;
 import com.bestseller.ecommerce.entity.User;
 import com.bestseller.ecommerce.model.UserRole;
-import com.bestseller.ecommerce.repository.*;
-import com.bestseller.ecommerce.service.*;
+import com.bestseller.ecommerce.repository.CartItemRepository;
+import com.bestseller.ecommerce.repository.CartRepository;
+import com.bestseller.ecommerce.repository.OrderProductRepository;
+import com.bestseller.ecommerce.repository.OrderRepository;
+import com.bestseller.ecommerce.repository.ProductRepository;
+import com.bestseller.ecommerce.service.CartService;
+import com.bestseller.ecommerce.service.CartServiceImpl;
+import com.bestseller.ecommerce.service.DiscountService;
+import com.bestseller.ecommerce.service.DiscountServiceImpl;
+import com.bestseller.ecommerce.service.OrderService;
+import com.bestseller.ecommerce.service.OrderServiceImpl;
+import com.bestseller.ecommerce.service.ProductService;
+import com.bestseller.ecommerce.service.ProductServiceImpl;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,104 +30,99 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 public class OrderServiceTest {
 
-	@TestConfiguration
-	static class OrderServiceImplTestConfig {
+    private static final User user = new User("soner", "sezgin", "+905332108093", "esoner.sezgin@gmail.com", UserRole.USER, "", "1");
+    @Autowired
+    private OrderService orderService;
 
-		@Bean
-		public OrderService orderService() {
-			return new OrderServiceImpl();
-		}
+    @Autowired
+    private CartService cartService;
 
-		@Bean
-		public CartService cartService() {
-			return new CartServiceImpl();
-		}
+    @Autowired
+    private ProductService productService;
 
-		@Bean
-		public ProductService productService() {
-			return new ProductServiceImpl();
-		}
+    @Autowired
+    private DiscountService discountService;
 
-		@Bean
-		public DiscountService discountService() {
-			return new DiscountServiceImpl();
-		}
-	}
+    @MockBean
+    private OrderRepository orderRepository;
 
-	@Autowired
-	private OrderService orderService;
+    @MockBean
+    private OrderProductRepository orderProductRepository;
 
-	@Autowired
-	private CartService cartService;
+    @MockBean
+    private CartRepository cartRepository;
 
-	@Autowired
-	private ProductService productService;
+    @MockBean
+    private CartItemRepository cartItemRepository;
 
-	@Autowired
-	private DiscountService discountService;
+    @MockBean
+    private ProductRepository productRepository;
 
-	@MockBean
-	private OrderRepository orderRepository;
+    @BeforeAll
+    public static void setUp() {
+        user.setId(1L);
+    }
 
-	@MockBean
-	private OrderProductRepository orderProductRepository;
+    @Test
+    public void testGetOrders() {
+        Order order1 = new Order();
+        order1.setUsername(user.getUsername());
+        Order order2 = new Order();
+        order2.setUsername(user.getUsername());
 
-	@MockBean
-	private CartRepository cartRepository;
+        List<Order> expected = List.of(order1, order2);
+        Mockito.when(orderRepository.findByUsername(user.getUsername())).thenReturn(expected);
+        List<Order> actual = orderService.getOrders(user);
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+    }
 
-	@MockBean
-	private CartItemRepository cartItemRepository;
+    @Test
+    public void testGetAllOrders() {
+        Order order1 = new Order();
+        order1.setUsername(user.getUsername());
+        Order order2 = new Order();
+        order2.setUsername(user.getUsername());
 
-	@MockBean
-	private ProductRepository productRepository;
+        Order order3 = new Order();
+        User user2 = new User("paul", "muaddib", "+905332108093", "paul.muaddib@arrakis.com", UserRole.ADMIN, "", "1");
+        order3.setUsername(user2.getUsername());
 
-	private static final User user = new User("soner", "sezgin", "+905332108093", "esoner.sezgin@gmail.com", UserRole.USER, "", "1");
+        Order order4 = new Order();
+        User user3 = new User("turin", "turambar", "+905332108093", "turin.turambar@gurthang.com", UserRole.ADMIN, "", "1");
+        order4.setUsername(user3.getUsername());
 
-	@BeforeAll
-	public static void setUp() {
-		user.setId(1L);
-	}
+        List<Order> expected = List.of(order1, order2, order3, order4);
+        Mockito.when(orderRepository.findAll()).thenReturn(expected);
+        List<Order> actual = orderService.getAllOrders();
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+    }
 
-	@Test
-	public void testGetOrders() {
-		Order order1 = new Order();
-		order1.setUsername(user.getUsername());
-		Order order2 = new Order();
-		order2.setUsername(user.getUsername());
+    @TestConfiguration
+    static class OrderServiceImplTestConfig {
 
-		List<Order> expected = List.of(order1, order2);
-		Mockito.when(orderRepository.findByUsername(user.getUsername())).thenReturn(expected);
-		List<Order> actual = orderService.getOrders(user);
-		assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-	}
+        @Bean
+        public OrderService orderService() {
+            return new OrderServiceImpl();
+        }
 
-	@Test
-	public void testGetAllOrders() {
-		Order order1 = new Order();
-		order1.setUsername(user.getUsername());
-		Order order2 = new Order();
-		order2.setUsername(user.getUsername());
+        @Bean
+        public CartService cartService() {
+            return new CartServiceImpl();
+        }
 
-		Order order3 = new Order();
-		User user2 = new User("paul", "muaddib", "+905332108093", "paul.muaddib@arrakis.com", UserRole.ADMIN, "", "1");
-		order3.setUsername(user2.getUsername());
+        @Bean
+        public ProductService productService() {
+            return new ProductServiceImpl();
+        }
 
-		Order order4 = new Order();
-		User user3 = new User("turin", "turambar", "+905332108093", "turin.turambar@gurthang.com", UserRole.ADMIN, "", "1");
-		order4.setUsername(user3.getUsername());
-
-		List<Order> expected = List.of(order1, order2, order3, order4);
-		Mockito.when(orderRepository.findAll()).thenReturn(expected);
-		List<Order> actual = orderService.getAllOrders();
-		assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-	}
+        @Bean
+        public DiscountService discountService() {
+            return new DiscountServiceImpl();
+        }
+    }
 
 }

@@ -2,106 +2,120 @@ package com.bestseller.ecommerce.entity;
 
 import com.bestseller.ecommerce.model.ProductType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Product implements Comparable<Product> {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
 
-	@Column(unique=true)
-	@NotNull(message = "Name is mandatory")
-	private String name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@NotNull(message = "Price is mandatory")
-	private BigDecimal price;
+    @Column(unique = true)
+    @NotNull(message = "Name is mandatory")
+    private String name;
 
-	@NotNull(message = "Product type is mandatory")
-	@Enumerated(EnumType.STRING)
-	private ProductType type;
+    @NotNull(message = "Price is mandatory")
+    private BigDecimal price;
 
-	@JsonIgnore
-	@ManyToMany(mappedBy = "products", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private List<CartItem> cartItem = new ArrayList<>();
+    @NotNull(message = "Product type is mandatory")
+    @Enumerated(EnumType.STRING)
+    private ProductType type;
 
-	public Product() {
-	}
+    @JsonIgnore
+    @ManyToMany(mappedBy = "products", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<CartItem> cartItem = new ArrayList<>();
 
-	public Product(@NotNull(message = "Name is mandatory") String name, @NotNull(message = "Price is mandatory") BigDecimal price,
-			@NotNull(message = "Product type is mandatory") ProductType type) {
-		this.name = name;
-		this.price = price;
-		this.type = type;
-	}
+    public Product() {
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Product(@NotNull(message = "Name is mandatory") String name, @NotNull(message = "Price is mandatory") BigDecimal price,
+            @NotNull(message = "Product type is mandatory") ProductType type) {
+        this.name = name;
+        this.price = price;
+        this.type = type;
+    }
 
-	public void setId(@NotNull(message = "ID is mandatory") Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setId(@NotNull(message = "ID is mandatory") Long id) {
+        this.id = id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public BigDecimal getPrice() {
-		return price;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setPrice(BigDecimal price) {
-		this.price = price.setScale(2, RoundingMode.HALF_UP);
-	}
+    public BigDecimal getPrice() {
+        return price;
+    }
 
-	public ProductType getType() {
-		return type;
-	}
+    public void setPrice(BigDecimal price) {
+        this.price = price.setScale(2, RoundingMode.HALF_UP);
+    }
 
-	public void setType(ProductType type) {
-		this.type = type;
-	}
+    public ProductType getType() {
+        return type;
+    }
 
-	public List<CartItem> getCartItem() {
-		return cartItem;
-	}
+    public void setType(ProductType type) {
+        this.type = type;
+    }
 
-	public void setCartItem(List<CartItem> cartItem) {
-		this.cartItem = cartItem;
-	}
+    public List<CartItem> getCartItem() {
+        return cartItem;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		Product product = (Product) o;
-		return name.equals(product.name) && type == product.type;
-	}
+    public void setCartItem(List<CartItem> cartItem) {
+        this.cartItem = cartItem;
+    }
 
-	@Override public int hashCode() {
-		return Objects.hash(name, type);
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Product product = (Product) o;
+        return name.equals(product.name) && type == product.type;
+    }
 
-	@Override public int compareTo(Product that) {
-		return Comparator.comparing(Product::getType).thenComparing(Product::getName).compare(this, that);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, type);
+    }
 
-	@Override public String toString() {
-		return "Product{" + "id=" + id + ", name='" + name + '\'' + ", price=" + price + ", type=" + type + '}';
-	}
+    @Override
+    public int compareTo(Product that) {
+        return Comparator.comparing(Product::getType).thenComparing(Product::getName).compare(this, that);
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" + "id=" + id + ", name='" + name + '\'' + ", price=" + price + ", type=" + type + '}';
+    }
 }
