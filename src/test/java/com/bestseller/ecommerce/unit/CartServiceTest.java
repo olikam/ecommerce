@@ -143,11 +143,9 @@ public class CartServiceTest {
     @Test
     public void testDeleteOneItem() {
         int cartItemQuantity = 2;
-        addCartItemToCart(cartItemQuantity);
-        DeleteItemRequest deleteItemRequest = new DeleteItemRequest();
-        deleteItemRequest.setCartItemId(1L);
         int deletedQuantity = 1;
-        deleteItemRequest.setQuantity(deletedQuantity);
+        addCartItemToCart(cartItemQuantity);
+        DeleteItemRequest deleteItemRequest = new DeleteItemRequest(1L, deletedQuantity);
 
         Mockito.when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart));
         Cart actualCart = cartService.delete(user, deleteItemRequest);
@@ -158,11 +156,9 @@ public class CartServiceTest {
     @Test
     public void testMoreThanItemSize() {
         int cartItemQuantity = 2;
-        addCartItemToCart(cartItemQuantity);
-        DeleteItemRequest deleteItemRequest = new DeleteItemRequest();
-        deleteItemRequest.setCartItemId(1L);
         int deletedQuantity = 4;
-        deleteItemRequest.setQuantity(deletedQuantity);
+        addCartItemToCart(cartItemQuantity);
+        DeleteItemRequest deleteItemRequest = new DeleteItemRequest(1L, deletedQuantity);
 
         Mockito.when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart));
         Cart actualCart = cartService.delete(user, deleteItemRequest);
@@ -173,9 +169,7 @@ public class CartServiceTest {
     @Test
     public void testDeleteAllItems() {
         addCartItemToCart(3);
-        DeleteItemRequest deleteItemRequest = new DeleteItemRequest();
-        deleteItemRequest.setCartItemId(1L);
-        deleteItemRequest.setQuantity(3);
+        DeleteItemRequest deleteItemRequest = new DeleteItemRequest(1L, 3);
 
         Mockito.when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart));
         Cart actualCart = cartService.delete(user, deleteItemRequest);

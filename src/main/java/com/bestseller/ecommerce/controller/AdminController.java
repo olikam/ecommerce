@@ -2,7 +2,6 @@ package com.bestseller.ecommerce.controller;
 
 import com.bestseller.ecommerce.entity.Product;
 import com.bestseller.ecommerce.model.ProductCreateRequest;
-import com.bestseller.ecommerce.model.ProductDeleteRequest;
 import com.bestseller.ecommerce.model.ProductUpdateRequest;
 import com.bestseller.ecommerce.model.Report;
 import com.bestseller.ecommerce.service.ProductService;
@@ -15,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,15 +45,16 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PutMapping("/product")
-    public ResponseEntity<String> update(@Valid @RequestBody ProductUpdateRequest productUpdateRequest) {
+    @PutMapping("/product/{id}")
+    public ResponseEntity<String> update(@PathVariable Long id, @Valid @RequestBody ProductUpdateRequest productUpdateRequest) {
+        productUpdateRequest.setId(id);
         productService.update(productUpdateRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/product")
-    public ResponseEntity<String> delete(@Valid @RequestBody ProductDeleteRequest productDeleteRequest) {
-        productService.delete(productDeleteRequest.getProductId());
+    @DeleteMapping("/product/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+        productService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

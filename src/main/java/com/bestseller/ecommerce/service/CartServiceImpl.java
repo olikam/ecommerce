@@ -104,7 +104,7 @@ public class CartServiceImpl implements CartService {
     public Cart delete(User user, DeleteItemRequest deleteItemRequest) {
         cartRepository.findByUserId(user.getId())
                 .ifPresent(cart -> cart.getCartItems().stream()
-                        .filter(cartItem -> cartItem.getId() == deleteItemRequest.getCartItemId().longValue())
+                        .filter(cartItem -> cartItem.getId() == deleteItemRequest.getId().longValue())
                         .findAny()
                         .ifPresent(cartItem -> {
                             cart.removeCartItem(cartItem, deleteItemRequest.getQuantity());

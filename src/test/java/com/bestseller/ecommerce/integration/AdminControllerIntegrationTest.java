@@ -3,15 +3,14 @@ package com.bestseller.ecommerce.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.bestseller.ecommerce.DemoApplication;
 import com.bestseller.ecommerce.entity.Product;
 import com.bestseller.ecommerce.entity.User;
 import com.bestseller.ecommerce.model.ProductCreateRequest;
-import com.bestseller.ecommerce.model.ProductDeleteRequest;
 import com.bestseller.ecommerce.model.ProductType;
 import com.bestseller.ecommerce.model.ProductUpdateRequest;
 import com.bestseller.ecommerce.repository.ProductRepository;
@@ -80,7 +79,7 @@ public class AdminControllerIntegrationTest {
     public void testUpdate() throws Exception {
         ProductUpdateRequest request = createProductUpdateRequest();
 
-        mvc.perform(patch("/api/admin/product")
+        mvc.perform(put("/api/admin/product/" + request.getId())
                 .with(user(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(request)))
@@ -97,7 +96,7 @@ public class AdminControllerIntegrationTest {
         ProductUpdateRequest request = createProductUpdateRequest();
         request.setName("Milk");
 
-        mvc.perform(patch("/api/admin/product")
+        mvc.perform(put("/api/admin/product/" + request.getId())
                 .with(user(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(request)))
@@ -106,22 +105,13 @@ public class AdminControllerIntegrationTest {
 
     @Test
     public void testDelete() throws Exception {
-        ProductDeleteRequest request = createProductDeleteRequest();
-
-        mvc.perform(delete("/api/admin/product")
+        long deleteId = 4;
+        mvc.perform(delete("/api/admin/product/" + deleteId)
                 .with(user(admin))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(request)))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        Optional<Product> result = productRepository.findById(request.getProductId());
+        Optional<Product> result = productRepository.findById(deleteId);
         assertThat(result).isEmpty();
-    }
-
-    private ProductDeleteRequest createProductDeleteRequest() {
-        Product product = productRepository.findById(4L).orElseThrow(AssertionError::new);
-        ProductDeleteRequest productDeleteRequest = new ProductDeleteRequest();
-        productDeleteRequest.setProductId(product.getId());
-        return productDeleteRequest;
     }
 
     private ProductCreateRequest createProductCreateRequest() {

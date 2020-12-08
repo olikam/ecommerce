@@ -94,15 +94,11 @@ public class CartControllerIntegrationTest {
         Long drinkId = 3L;
         List<Long> toppingIds = List.of(6L, 7L);
         Cart cart = addItem(user2, quantity, drinkId, toppingIds);
-        DeleteItemRequest deleteItemRequest = new DeleteItemRequest();
-        deleteItemRequest.setCartItemId(cart.getCartItems().iterator().next().getId());
         int deletedQuantity = 1;
-        deleteItemRequest.setQuantity(deletedQuantity);
+        DeleteItemRequest deleteItemRequest = new DeleteItemRequest(cart.getCartItems().iterator().next().getId(), deletedQuantity);
 
-        mvc.perform(delete("/api/cart")
-                .with(user(user2))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(deleteItemRequest)))
+        mvc.perform(delete("/api/cart/item/{id}?quantity={quantity}", deleteItemRequest.getId(), deleteItemRequest.getQuantity())
+                .with(user(user2)))
                 .andExpect(status().isOk());
 
         Optional<Cart> result = cartRepository.findByUserId(user2.getId());
@@ -116,7 +112,7 @@ public class CartControllerIntegrationTest {
         Long drinkId = 3L;
         List<Long> toppingIds = List.of(6L, 7L);
         addItem(user2, quantity, drinkId, toppingIds);
-        mvc.perform(delete("/api/cart/all")
+        mvc.perform(delete("/api/cart/items")
                 .with(user(user2))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -130,7 +126,7 @@ public class CartControllerIntegrationTest {
         addItemRequest.setDrinkId(drinkId);
         addItemRequest.setToppingIds(toppingIds);
         addItemRequest.setQuantity(quantity);
-        MvcResult mvcResult = mvc.perform(post("/api/cart")
+        MvcResult mvcResult = mvc.perform(post("/api/cart/item")
                 .with(user(user))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(addItemRequest)))

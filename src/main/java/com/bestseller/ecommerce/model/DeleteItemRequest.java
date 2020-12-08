@@ -1,24 +1,22 @@
 package com.bestseller.ecommerce.model;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
-
 public class DeleteItemRequest {
 
-    @NotNull(message = "Cart item id cannot be empty.")
-    @PositiveOrZero(message = "Cart item id must be 0 at least.")
-    private Long cartItemId;
+    private Long id;
 
-    @Min(value = 1, message = "Quantity must be 1 at least.")
     private Integer quantity;
 
-    public Long getCartItemId() {
-        return cartItemId;
+    public DeleteItemRequest(Long id, Integer quantity) {
+        this.id = id;
+        this.quantity = quantity;
     }
 
-    public void setCartItemId(Long cartItemId) {
-        this.cartItemId = cartItemId;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Integer getQuantity() {
@@ -31,6 +29,6 @@ public class DeleteItemRequest {
 
     @Override
     public String toString() {
-        return "DeleteItemRequest{" + "cartItemId=" + cartItemId + ", quantity=" + quantity + '}';
+        return "DeleteItemRequest{" + "cartItemId=" + id + ", quantity=" + quantity + '}';
     }
 }

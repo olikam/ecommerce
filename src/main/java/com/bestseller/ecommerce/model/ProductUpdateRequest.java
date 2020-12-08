@@ -1,12 +1,13 @@
 package com.bestseller.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 
 public class ProductUpdateRequest {
 
-    @NotNull(message = "Product id cannot be empty.")
+    @JsonIgnore
     private Long id;
 
     private String name;

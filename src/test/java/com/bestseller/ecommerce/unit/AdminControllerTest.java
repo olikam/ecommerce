@@ -4,13 +4,13 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.bestseller.ecommerce.config.AuthExceptionHandler;
 import com.bestseller.ecommerce.controller.AdminController;
 import com.bestseller.ecommerce.entity.User;
 import com.bestseller.ecommerce.model.ProductCreateRequest;
-import com.bestseller.ecommerce.model.ProductDeleteRequest;
 import com.bestseller.ecommerce.model.ProductType;
 import com.bestseller.ecommerce.model.ProductUpdateRequest;
 import com.bestseller.ecommerce.model.UserRole;
@@ -94,7 +94,7 @@ public class AdminControllerTest {
     public void testUpdate() throws Exception {
         ProductUpdateRequest request = createProductUpdateRequest();
 
-        mvc.perform(patch("/api/admin/product")
+        mvc.perform(put("/api/admin/product/" + request.getId())
                 .with(user(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(request)))
@@ -123,13 +123,9 @@ public class AdminControllerTest {
 
     @Test
     public void testDelete() throws Exception {
-        ProductDeleteRequest request = new ProductDeleteRequest();
-        request.setProductId(5L);
-
-        mvc.perform(delete("/api/admin/product")
+        mvc.perform(delete("/api/admin/product/5")
                 .with(user(admin))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(request)))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
