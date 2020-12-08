@@ -1,12 +1,12 @@
 # E-commerce Application with Spring Boot
-This application is a simple ecommerce application made by using Spring Boot.
+This is a RESTful ecommerce backend application made by using Spring Boot.
 
 * Language: Java 11
 * Framework: Spring Boot
 * Database: H2
 
 ## Objective
-### Starbux Coffee - Backend API\
+### Starbux Coffee - Backend API
 We need a backend for our online coffee place startup, starbux coffee, where users can order
 drinks/toppings and admins can create/update/delete drinks/toppings and have access to
 reports.
@@ -40,15 +40,15 @@ should be used and the other one should be ignored.
 > * Total amount of the orders per customer.
 > * Most used toppings for drinks.
 
-#### Other requirements:
-> * Java 8+, spring boot, (any other library you need, i.e H2 database)
-> * Test coverage > 70%
-
 ## Solution
 #### Authentication
-We needed to add authentication and authorization controls, so users can access only their own data and some operations can be restricted with respect to user roles.
-Authentication was made by using JWT (JSON Web Token). After register or login requests come and the user is authenticated, a token returns from the endpoint. From that on, all endpoints become available with that token except for the role restrictions.
-Token timeout was set to an hour as hardcoded.
+Authentication and authorization added, so users can access only their own data and some operations can be restricted with respect to user roles.\
+\
+Authentication was made by using JWT (JSON Web Token). After register or login requests come and the user is authenticated, a token returns from the endpoint. From that on, all endpoints become available with that token except for the role restrictions.\
+\
+The token will return in response body after calling login or register endpoints. After that, the token must be set as Authorization value in the header for other requests.\
+\
+Token timeout was hardcoded as one hour.
 
 #### Exception Handling
 All exceptions were handled in one place and provided returning the meaningful responses to the client.
@@ -77,9 +77,9 @@ Line: %83
 ##### Customer
 ```
 [GET] /api/cart
-[POST] /api/cart
-[DELETE] /api/cart
-[DELETE] /api/cart/all
+[POST] /api/cart/item
+[DELETE] /api/cart/item/{id}
+[DELETE] /api/cart/items
 [GET] /api/products
 [GET] api/order
 [POST] api/order
@@ -87,12 +87,11 @@ Line: %83
 ##### Admin
 ```
 [POST] /api/admin/product
-[PATCH] /api/admin/product
-[DELETE] /api/admin/product
+[PUT] /api/admin/product/{id}
+[DELETE] /api/admin/product/{id}
 [GET] /api/admin/report
 ```
 #### Request Sample
-All requests and responses are in JSON format. For example,
 In order to create a new user, you need to send a POST request to:
 http://localhost:8080/api/auth/register with a body like:
 ```
