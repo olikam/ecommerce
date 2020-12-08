@@ -1,13 +1,13 @@
 # E-commerce Application with Spring Boot
 This is a RESTful ecommerce backend application made by using Spring Boot.
 
-* Java 11
-* Spring Boot
-* Spring Security
-* JPA
-* JUnit 5
-* H2
-* Swagger 2
+*Java 11
+*Spring Boot
+*Spring Security
+*JPA
+*JUnit 5
+*H2
+*Swagger 2
 
 ## Objective
 ### Starbux Coffee - Backend API
