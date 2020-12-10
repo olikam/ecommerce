@@ -46,13 +46,13 @@ should be used and the other one should be ignored.
 
 ## Solution
 #### Authentication
-Authentication and authorization added, so users can access only their own data and some operations can be restricted with respect to user roles.\
+Both authentication and authorization were implemented, so users can access their own data only and some operations can be restricted with respect to user roles.\
 \
-Authentication was made by using JWT (JSON Web Token). After register or login requests come and the user is authenticated, a token returns from the endpoint. From that on, all endpoints become available with that token except for the role restrictions.\
+Authentication is made by using JWT (JSON Web Token). After register or login requests come and the user is authenticated, a token returns from the endpoint. From that on, all endpoints become available within the role boundaries.\
 \
-The token will return in response body after calling login or register endpoints. After that, the token must be set as Authorization value in the header for other requests.\
+A token returns in response body after calling login or register endpoints. This token must be set as Authorization value in the header for other requests.\
 \
-Token timeout was hardcoded as one hour.
+Token timeout is hardcoded as one hour.
 
 #### Exception Handling
 All exceptions were handled in one place and provided returning the meaningful responses to the client.
